@@ -149,10 +149,9 @@ class HeadphonesCheck {
     this._settings = {
       callback: undefined,
       volumeSound: 'stimuli_HugginsPitch/HugginsPitch_calibration.flac',
-      volumeText: '<p class="notice">Mettiti le cuffie.</p>' +
-        '<p>Se non ce le hai, puoi usare degli auricolari (è preferibile utilizzare le cuffie).</p>' +
-        '<p>Premi il pulsante in basso per riprodurre un suono e controllare il tuo volume.</p>',
-        // <span style="color:#03a9f4;"><b>蓝色</b></span>
+      volumeText: '<p class="notice">请戴上头戴式耳机</p>' +
+          '<p>如果您没有头戴式耳机，可以尝试手机或蓝牙耳机</p>' +
+          '<p>点击一下<span style="color:#03a9f4;"><b>蓝色</b></span> 按钮来调节您设备的音量</p>',
       checkType: 'huggins',
       checkVolume: 1,
       checkExample: 'stimuli_HugginsPitch/HugginsPitch_example_2.flac',
@@ -182,7 +181,7 @@ class HeadphonesCheck {
     };
     this.htmlElements = {
       huggins: {
-        instruction: '<p class="notice">Ora controlleremo le tue cuffie</p>' +
+        instruction: '<p class="notice">现在我们来检查您的耳机</p>' +
             '<p>我们要确保您的耳机可以正常工作</p>' +
             '<p>接下来我们将会播放数个音频，如您未准备好请不要按继续按钮</p>' +
             '<p>每个声音都包含三个噪音，中间有无声的间隙，其中一个声音中隐藏着微弱的哔哔声</p>' +
@@ -208,17 +207,18 @@ class HeadphonesCheck {
             '<p class="center">Which noise is the smoothest? Is it <b>1</b>, <b>2</b>, or <b>3</b>?</p>',
       },
       antiphase: {
-        instruction: '<p class="notice">Ora controlleremo le tue cuffie</p>' +
-            '<p>Dobbiamo assicurarci che siano ben regolate</p>' +
-            '<p>19.	Nelle prossime schermate, ogni schermo avrà un pulsante che riprodurrà un suono.</p>' +
-            '<p>Siccome puoi riprodurre ogni suono solo una volta, non cliccare sul pulsante a meno di non essere pronto/a.</p>' +
-            '<p>Sentirai una sequenza di tre suoni con alcune pause nel mezzo.</p>'+
-            '<p>Il tuo compito è quello di decidere quale tra i tre suoni è il più basso e cliccare sul pulsante corretto: < b > primo</b>, <b> secondo </b>, o <b> terzo</b>.</p>',
-        checkPage: '<p class="notice">Ricorda, puoi riprodurre ogni suono una sola volta. Ascolta attentamente.</p>' +
-            '<p class="center">Quale suono è il più basso: <b>Il primo</b>, <b>il secondo</b>, o <b>il terzo</b>?</p>',
+        instruction: '<p class="notice">现在我们来检查您的耳机</p>' +
+            '<p>我们要确保您的耳机可以正常工作</p>' +
+            '<p>接下来我们将会播放数个音频，如您未准备好请不要按继续按钮</p>' +
+            '<p>每个测试都包含三段含有无声间隙的噪音</p>' +
+            '<p>您的任务是确定哪一段最安静或最柔和，然后单击正确的按钮 <b>1</b>, <b>2</b>, or <b>3</b>.</p>',
+        checkPage: '<p class="notice">您只有一次机会尝试，请认真听录音</p>' +
+            '<p class="center">哪一种最安静或最柔和? <b>1</b>, <b>2</b>, 还是 <b>3</b>?</p>',
       },
-      reattempt: '<p class="notice">prova fallita</p>' +
-          '<p class="notice">un altro tentativo</p>',
+      reattempt: '<p class="notice">您未通过测试</p>' +
+          '<p>请确保您在安静的房间内，并且正确佩戴耳机</p>' +
+          '<p>您可以尝试更换测试地点或另一套耳机</p>' +
+          '<p class="notice">如果您确定您的耳机工作正常，您可以再次尝试</p>',
       audioProblem: '<p>Your browser cannot play the audio files used in this study.<br>This study will not work.</p>' +
           '<p>Please try again using a different web browser (Firefox and Chrome are recommended), and update your web browser to its newest version.</p>',
     };
@@ -327,8 +327,8 @@ class HeadphonesCheck {
         '<button type="button" data-helper-button data-headphones-audio-control data-headphones-audio-group="group1" disabled>Loading sounds...</button>' +
         '<audio data-headphones-audio-group="group1" data-headphones-volume="1" preload="auto" loop><source src="' + this._settings.volumeSound + '">' + this.htmlElements.audioProblem + '</audio>' +
         '</div>' +
-        '<p>regolare il volume</p>';
-    const promise = this._createDialog({content: html, title: 'regolare', yes: 'pronto'});
+        '<p>如果您未调整设备音量很可能会无法完成测试</p>';
+    const promise = this._createDialog({content: html, title: '调节您的设备音量', yes: '我已调整完毕'});
     this._createPlayer('button:contains("finished")');
     return promise;
   }
@@ -340,9 +340,9 @@ class HeadphonesCheck {
    */
   _instruction() {
     let html = this.htmlElements[this._settings.checkType].instruction +
-        '<p class="notice">riprodurre il suono</p>' +
-        '<p class="notice">pronto?</p>';
-    const promise = this._createDialog({content: html, title: 'Headphones check', yes: 'pronto', back: 'restituzione'});
+        '<p class="notice">注意：每段声音仅播放一次</p>' +
+        '<p class="notice">您准备好了吗？</p>';
+    const promise = this._createDialog({content: html, title: 'Headphones check', yes: '准备好了', back: '返回'});
     if (this._settings.checkType === 'huggins' || this._settings.checkType === 'beat') {
       $('span[data-headphones-check-target]').html(
           '<audio data-headphones-audio-group="group1" data-headphones-volume="' + this._settings.checkVolume + '" preload="auto"><source src="' + this._settings.checkExample + '">' + this.htmlElements.audioProblem + '</audio>',
@@ -367,9 +367,9 @@ class HeadphonesCheck {
   _offerReattempt() {
     let html = this.htmlElements.reattempt;
     if (+this.attemptCount === this._settings.maxAttempts - 1) {
-      html += '<p class="notice">You can choose to have another attempt</p>';
+      html += '<p class="notice">您可以选择再次尝试或者退出测试</p>';
     }
-    this._createDialog({content: html, title: 'prova fallita', yes: 'riprova', color: '#FFA500'})
+    this._createDialog({content: html, title: '测试未通过', yes: '再次尝试', color: '#FFA500'})
         .then(() => {
           this._instruction();
         });
@@ -468,17 +468,17 @@ class HeadphonesCheck {
   _createTrial(soundFile) {
     let html = '<table><tr>' +
         '<td>' +
-        '<span data-headphones-check-stage="1">ascoltare</span>' +
+        '<span data-headphones-check-stage="1">听录音</span>' +
         '<button type="button" data-helper-button data-headphones-audio-control data-headphones-audio-group="group1" disabled>Loading sound...</button>' +
         '</td>' +
         '<td>' +
-        '<span class="disabled" data-headphones-check-stage="2">scegliere</span>' +
+        '<span class="disabled" data-headphones-check-stage="2">请选择</span>' +
         '<button type="button" data-headphones-check-response="1" data-helper-button disabled>1</button>' +
         '<button type="button" data-headphones-check-response="2" data-helper-button disabled>2</button>' +
         '<button type="button" data-headphones-check-response="3" data-helper-button disabled>3</button>' +
         '</td>' +
         '<td>' +
-        '<span class="disabled" data-headphones-check-stage="3">continua</span>' +
+        '<span class="disabled" data-headphones-check-stage="3">请继续</span>' +
         '<button type="button" data-helper-button data-headphones-check-next disabled>Confirm and continue</button>' +
         '</td>' +
         '</tr></table>' +
