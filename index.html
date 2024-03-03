@@ -1,520 +1,240 @@
-<!DOCTYPE html>
-<!--
-    Plain-Academic by Vasilios Mavroudis
-    Released under the  Simplified BSD License/FreeBSD (2-clause) License.
-    https://github.com/mavroudisv/plain-academic
--->
+<!DOCTYPE HTML>
 
-<style>
-    .smaller-font {
-        font-size: 14px;
-        /* Adjust the font size as needed */
-    }
-
-    a.buttan:link,
-    a.buttan:visited {
-        color: black;
-        padding: 0px 3px;
-        margin: 1px 0px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        border: 1px solid black;
-        position: relative;
-    }
-
-    a.nf:link,
-    a.nf:visited,
-    .nf {
-        background-color: #b1d2ac;
-    }
-
-    a.nf:hover,
-    a.nf:active {
-        background-color: #b1d2ac;
-    }
-
-    a.free:link,
-    a.free:visited,
-    .free {
-        background-color: #89C5EA;
-    }
-
-    a.free:hover,
-    a.free:active,
-    {
-    background-color: #89C5EA;
-    }
-
-    a.talk:link,
-    a.talk:visited,
-    .talk {
-        background-color: #89C5EA;
-    }
-
-    a.talk:hover,
-    a.talk:active,
-    {
-    background-color: #89C5EA;
-    }
-
-    a.aux:link,
-    a.aux:visited,
-    .aux {
-        background-color: #A08E7A;
-        color: white;
-    }
-
-    a.aux:hover,
-    a.aux:active {
-        background-color: #A08E7A;
-    }
-
-    ul.vert {
-        border-left: 0px solid red;
-        background-color: #f1f1f1;
-        list-style-type: none;
-    }
-
-    ul.vert>li {
-        border-left: 10px solid #d1d1d1;
-        background-color: #f1f1f1;
-        list-style-type: none;
-        padding: 10px 20px;
-        margin-bottom: 10px;
-        margin-left: -45px;
-    }
-
-    a.buttan:after {
-        padding: 5px;
-        display: none;
-        position: absolute;
-        text-align: center;
-        color: #111111;
-        top: -30px;
-        right: 30px;
-        width: 200px;
-        background-color: #fef4c5;
-        border: 1px solid #d4b943;
-        -moz-border-radius: 2px;
-        -webkit-border-radius: 2px;
-        -ms-border-radius: 2px;
-        border-radius: 2px;
-        z-index: 98;
-    }
-
-    a.buttan:hover:after {
-        display: block;
-    }
-
-    h2 {
-        font-weight: 100;
-    }
-
-    /* LAYOUT CSS */
-    .pure-img-responsive {
-        max-width: 100%;
-        height: auto;
-    }
-
-    #layout {
-        padding: 0;
-    }
-
-    .header {
-        text-align: center;
-        top: auto;
-        margin: 3em auto;
-    }
-
-    .sidebar {
-        background: rgb(61, 79, 93);
-        color: #fff;
-    }
-
-    .brand-title,
-    .brand-tagline {
-        margin: 0;
-    }
-
-    .brand-tagline {
-        font-weight: 300;
-        color: rgb(176, 202, 219);
-    }
-
-    .nav-list {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
-    .nav-item {
-        display: inline-block;
-        *display: inline;
-        zoom: 1;
-    }
-
-    .nav-item a {
-        background: transparent;
-        border: 2px solid rgb(176, 202, 219);
-        color: #fff;
-        margin-top: 1em;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        font-size: 100%;
-    }
-
-    .nav-item a:hover,
-    .nav-item a:focus {
-        border: 2px solid rgb(61, 146, 201);
-        text-decoration: none;
-    }
-
-    .content-subhead {
-        text-transform: uppercase;
-        color: #aaa;
-        border-bottom: 1px solid #eee;
-        padding: 0.4em 0;
-        font-size: 80%;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-    }
-
-    .content {
-        padding: 2em 1em 0;
-    }
-
-    .post {
-        padding-bottom: 2em;
-    }
-
-    .h2 {
-        font-size: 2em;
-        color: #222;
-        margin-bottom: 0.2em;
-    }
-
-    p {
-        font-family: Georgia, "Cambria", serif;
-        color: #444;
-        line-height: 1.8em;
-    }
-
-    li {
-        font-family: Georgia, "Cambria", serif;
-    }
-
-    .post-meta {
-        color: #999;
-        font-size: 90%;
-        margin: 0;
-    }
-
-    .post-category {
-        margin: 0 0.1em;
-        padding: 0.3em 1em;
-        color: #fff;
-        background: #999;
-        font-size: 80%;
-    }
-
-    .post-category-design {
-        background: #5aba59;
-    }
-
-    .post-category-pure {
-        background: #4d85d1;
-    }
-
-    .post-category-yui {
-        background: #8156a7;
-    }
-
-    .post-category-js {
-        background: #df2d4f;
-    }
-
-    .post-images {
-        margin: 1em 0;
-    }
-
-    .post-image-meta {
-        margin-top: -3.5em;
-        margin-left: 1em;
-        color: #fff;
-        text-shadow: 0 1px 1px #333;
-    }
-
-    .footer {
-        text-align: center;
-        padding: 1em 0;
-    }
-
-    .footer a {
-        color: #ccc;
-        font-size: 80%;
-    }
-
-    .footer .pure-menu a:hover,
-    .footer .pure-menu a:focus {
-        background: none;
-    }
-
-    @media (min-width: 48em) {
-        .content {
-            padding: 2em 3em 0;
-            margin-left: 25%;
-        }
-
-        .header {
-            margin: 80% 2em 0;
-            text-align: right;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-        }
-
-        .nav-item {
-            display: block;
-        }
-
-    }
-
-    < !-- <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">--><link rel="stylesheet" href="firstcss.css"><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script><script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script><link href='https://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
-</style>
-
-<link rel="stylesheet"
-      href="pure-min.css">
-<link rel="stylesheet"
-      href="grids-responsive-min.css">
-
-<html lang="en">
+<html>
 
 <head>
-    <title>Xuanda Chen</title>
-    <meta charset="utf-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
-    <!--  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
-    <link rel="stylesheet"
-          href="firstcss.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Oswald:700'
-          rel='stylesheet'
-          type='text/css'>
+	<title>Xuanda Chen</title>
+	<meta charset="utf-8" />
+	<meta name="viewport"
+		  content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet"
+		  href="assets/css/main.css" />
 </head>
 
-<body>
+<body class="is-preload">
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
-                <li><a href="#publications">Publications</a></li>
-                <li><a href="#teaching">Teaching</a></li>
-                <li><a href="#notes">Notes</a></li>
-                <li><a href="./cv.pdf"
-                       ,
-                       target='_blank'>CV</a></li>
-            </ul>
-        </div>
-    </nav>
+	<!-- Wrapper -->
+	<div id="wrapper">
+
+		<!-- Main -->
+		<div id="main">
+			<div class="inner">
+
+				<!-- Header -->
+				<header id="header">
+					<a href="index.html"
+					   class="logo"><strong></strong></a>
+					<!-- <a href="index.html"
+					   class="logo"><strong>Editorial</strong> by HTML5 UP</a> -->
+					<ul class="icons">
+						<li><a href="#"
+							   class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#"
+							   class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#"
+							   class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>
+						<li><a href="#"
+							   class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="#"
+							   class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>
+					</ul>
+				</header>
+
+				<!-- Banner -->
+				<section id="banner">
+					<div class="content">
+						<header>
+							<h1>Xuanda Chen<br />
+							</h1>
+							<!-- <p>I'm a PhD Student at Department of Linguistics, McGill.</p> -->
+						</header>
+						<p><strong>xuanda.chen@mail.mcgill.ca</strong></p>
+						<p>I'm a PhD Student at Department of Linguistics, McGill.</p>
+
+						<ul class="actions">
+							<li><a href="#"
+								   class="button big">Learn More</a></li>
+						</ul>
+					</div>
+					<span class="image object">
+						<img src="images/hilltop.jpg"
+							 alt="" />
+					</span>
+				</section>
+
+				<!-- Section -->
+				<section>
+					<header class="major">
+						<h2>ABOUT ME</h2>
+					</header>
+					<p>I am a fourth-year PhD student at McGill Linguistics, affiliated with <a
+						   href="https://mila.quebec/en/">MILA</a> and the <a href="https://crblm.ca">Centre for Brain,
+							Language, and Music</a>. I have a wide-ranging interest in language and speech, and I adopt
+						behavioral, computational, and neuroimaging methods to investigate interesting questions in
+						phonetics, phonology, language acquisition, and psycholinguistics.</p>
+					<p>
+						I work on speech perception and language comprehension. My research focuses on the effect of
+						phonological knowledge on speech perception and several key aspects of the predictive mechanisms
+						in language comprehension, including their computational nature, the levels at which predictions
+						occur, the pre-activation of lower-level representations using higher-level ones, and any
+						commitment to predictions beyond pre-activation.</p>
+				</section>
+
+				<!-- Section -->
+				<section>
+					<header class="major">
+						<h2 id="publication">Publication</h2>
+					</header>
+					<h3>2023</h2>
+					<ul>
+						<li><strong>Xuanda Chen</strong>, Meghan Clayards, Heather Goad and Donghyun Kim. L1 effects on naive perception and production of [ʉ] by Mandarin and Italian speakers. <i>ICPhS 2023</i>, 2493-2496. <a href="https://guarant.cz/icphs2023/306.pdf">[Paper]</a> <a href="#">[Code]</a> <a href="#">[Demo]</a> <a href="#">[Slide]</a></li>
+					</ul>
+					
+					<h3>2021</h2>
+					<ul>
+					<li>Meng Liu, Longbiao Wang, Kong Aik Lee, <strong>Xuanda Chen</strong> and Jianwu Dang. Replay-attack detection using features with adaptive spectro-temporal resolution. <i>ICASSP 2021</i>, 6374-6378. <a href="https://ieeexplore.ieee.org/document/9414250">[Paper]</a> <a href="#">[Code]</a> <a href="#">[Demo]</a> <a href="#">[Slide]</a></li>
+					</ul>
+
+					<h3>2018</h2>
+					<ul>
+					<li><strong>Xuanda Chen</strong>, Yuan Jia and Ziyu Xiong. Measuring prosodic transfer in vector space by weighted tonal events. <i>ISCSLP 2018</i>, 6374-6378. <a href="https://ieeexplore.ieee.org/document/8706644">[Paper]</a> <a href="#">[Code]</a> <a href="#">[Demo]</a> <a href="#">[Slide]</a></li>
+					<li><strong>Xuanda Chen</strong>, Ziyu Xiong and Jian Hu. The trajectory of voice onset time with vocal aging. <i>Interspeech 2018</i>, 1556-1560. <a href="https://arxiv.org/pdf/1810.07030.pdf">[Paper]</a> <a href="#">[Code]</a> <a href="#">[Demo]</a> <a href="#">[Slide]</a></li>
+					</ul>
+
+					<h3>2017</h2>
+					<ul>
+					<li>Jian Hu, <strong>Xuanda Chen</strong>, and Qingyu Wu. An empirical case study of children's perception and production of stop consonants. <i>Journal of Hefei University (Comprehensive Edition)</i>, 6: 139-144. <a href="https://m.fx361.com/news/2017/0309/18473742.html">[Paper]</a> <a href="#">[Code]</a> <a href="#">[Demo]</a> <a href="#">[Slide]</a></li>
+					</ul>
+					
+					<!-- <div class="posts"> -->
+						<!-- <article> -->
+							<!-- <a href="#" class="image"><img src="images/pic06.jpg" alt="" /></a> -->
+							<!-- <p><span class="image left"><img src="images/pic01.jpg" alt="" /><h3>L1 Effects on Naive Perception and Production of [ʉ] by Mandarin and Italian
+								Speakers</h3></span><strong>Xuanda Chen</strong>, Meghan Clayards, Heather Goad and Donghyun Kim. 2023. In Proceedings of ICPhS 2023: 2493-2496</p>
+							<p></p>
+							<ul class="actions">
+								<li><a href="https://guarant.cz/icphs2023/306.pdf" class="button">Paper</a> </li>
+								<li><a href="#" class="button">Code</a> </li>
+								<li><a href="#" class="button">Demo</a> </li>
+								<li><a href="#" class="button">Slide</a> </li>
+							</ul>
+						</article> -->
+					<!-- </div> -->
+				</section>
 
 
+				<!-- <section>
+					<header class="major">
+						<h2>Ipsum sed dolor</h2>
+					</header>
+					<div class="posts">
+						<article>
+							<a href="#"
+							   class="image"><img src="images/pic06.jpg"
+									 alt="" /></a>
+							<h3>Amet varius aliquam</h3>
+							<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam
+								facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
+							<ul class="actions">
+								<li><a href="#"
+									   class="button">More</a></li>
+							</ul>
+						</article>
+					</div>
+				</section> -->
 
-    <!-- Page Content -->
-    <div class="container">
+			</div>
+		</div>
 
-        <div class="row">
+		<!-- Sidebar -->
+		<div id="sidebar">
+			<div class="inner">
 
-            <!-- Entries Column -->
-            <div class="col-md-8">
+				<!-- Search -->
+				<section id="search"
+						 class="alt">
+					<form method="post"
+						  action="#">
+						<input type="text"
+							   name="query"
+							   id="query"
+							   placeholder="Search" />
+					</form>
+				</section>
 
-                <!-- Main Image -->
-                <img class="img-responsive"
-                     src="hilltop.jpg"
-                     width="480"
-                     height="270"
-                     alt=""><br>
+				<!-- Menu -->
+				<nav id="menu">
+					<header class="major">
+						<h2>Menu</h2>
+					</header>
+					<ul>
+						<li><a href="index.html">Homepage</a></li>
+						<li><a href="#publication">Publication</a></li>
+						<li><a href="xdchen.pdf">CV</a></li>
+						<li></li>
+						<!-- <li><a href="elements.html">Elements</a></li> -->
+						<!-- <li>
+							<span class="opener">Submenu</span>
+							<ul>
+								<li><a href="#">Lorem Dolor</a></li>
+							</ul>
+						</li>
+						<li><a href="#">Amet Lacinia</a></li> -->
+					</ul>
+				</nav>
 
-                <p style="margin-top:3%; text-align:justify;">
+				<!-- Section -->
+				<!-- <section>
+					<header class="major">
+						<h2>Ante interdum</h2>
+					</header>
+					<div class="mini-posts">
+						<article>
+							<a href="#"
+							   class="image"><img src="images/pic07.jpg"
+									 alt="" /></a>
+							<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
+						</article>
+					</div>
+					<ul class="actions">
+						<li><a href="#"
+							   class="button">More</a></li>
+					</ul>
+				</section> -->
 
-                    I am a fourth-year PhD student at McGill Linguistics, affiliated with <a
-                       href="https://mila.quebec/en/">MILA</a> and the <a href="https://crblm.ca">Centre for Brain,
-                        Language, and Music</a>. I have a wide-ranging interest in language and speech, and I adopt
-                    behavioral, computational, and neuroimaging methods to investigate interesting questions in
-                    phonetics, phonology, language acquisition, and psycholinguistics.<br>
+				<!-- Section -->
+				<section>
+					<header class="major">
+						<h2>Get in touch</h2>
+					</header>
+					<!-- <p></p> -->
+					<ul class="contact">
+						<li class="icon solid fa-envelope"><a href="#">xuanda.chen@mail.mcgill.ca</a></li>
+						<li class="icon solid fa-phone">(514) 222-3696</li>
+						<li class="icon solid fa-home">1085 Dr. Penfield, Room 111<br />
+							Montreal, Quebec<br />
+							H3A 1A7
+						</li>
+					</ul>
+				</section>
 
-                    I work on speech perception and language comprehension. My research focuses on the effect of
-                    phonological knowledge on speech perception and several key aspects of the predictive mechanisms in
-                    language comprehension, including their computational nature, the levels at which predictions occur,
-                    the pre-activation of lower-level representations using higher-level ones, and any commitment to
-                    predictions beyond pre-activation.
+				<!-- Footer -->
+				<footer id="footer">
+					<p class="copyright">&copy; Xuanda Chen. This website was updated in Feb, 2024.
+					</p>
+				</footer>
 
-            </div>
+			</div>
+		</div>
 
-            <!-- Contact Info on the Sidebar -->
-            <div class="col-md-4">
-                <div style="font-family: 'Oswald', sans-serif; font-size: 32px;">Xuanda Chen</div></b><br>
-                <p><b>xuanda.chen@mail.mcgill.ca</b><br>
-                <p>PhD Student at Department of Linguistics, McGill</a>.
-                </p>
-            </div>
+	</div>
 
-            <div class="col-md-4"
-                 style="margin-top:1%">
-                <div class="media">
-                    <div>
-                        <h3>News</h3>
-                        <div class="col-md-12">
-                            <p><a href="">2023-08-06</a> I presented at ICPhS 2023!
-                            <p><a href="">2023-04-05</a> I presented at MoTH 2023!
-                            <p><a href="">2020-09-01</a> First Year!
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Links on the Sidebar -->
-
-            <div class="col-md-8">
-                <!-- Old: <div class="col-md-8" style="height: 120vh;"> -->
-                <h2 id="publications">Publications</h2>
-
-                <p>See also <a HREF="https://scholar.google.com/citations?user=F7DObhkAAAAJ&hl=en">Google Scholar</a>
-                </p>
-
-
-                <ul class="vert">
-
-                    <li class="smaller-font">
-                        <strong>L1 Effects on Naive Perception and Production of [ʉ] by Mandarin and Italian
-                            Speakers</strong>.
-                        <br>
-                        Xuanda Chen, Meghan Clayards, Heather Goad and Donghyun Kim<br>
-                        <a class="buttan nf"
-                           href="https://guarant.cz/icphs2023/306.pdf">ICPhS 2023</a>
-                        <a class="buttan free"
-                           href="">ePrint</a>
-                        <a class="buttan aux"
-                           href="">Slides</a>
-                    </li>
-
-                    <li class="smaller-font">
-                        <strong>Automatic Prosodic Annotation for L2 Speech Evaluation</strong>.
-                        <br>
-                        Xuanda Chen, Zhenhua Ling, Ziyu Xiong and Aijun Li<br>
-                        <a class="buttan nf"
-                           href="">Submitted</a>
-                        <a class="buttan free"
-                           href="">ePrint</a>
-                        <a class="buttan aux"
-                           href="">Slides</a>
-                    </li>
-
-                    <li class="smaller-font">
-                        <strong>Replay-Attack Detection Using Features With Adaptive Spectro-Temporal
-                            Resolution</strong>.
-                        <br>
-                        Meng Liu, Longbiao Wang, Kong Aik Lee, Xuanda Chen and Jianwu Dang<br>
-                        <a class="buttan nf"
-                           href="https://ieeexplore.ieee.org/document/9414250">ICASSP 2021</a>
-                        <a class="buttan free"
-                           href="https://ieeexplore.ieee.org/document/9414250">ePrint</a>
-                        <a class="buttan aux"
-                           href="">Slides</a>
-                    </li>
-
-                    <li class="smaller-font">
-                        <strong>Measuring Prosodic Transfer in Vector Space by Weighted Tonal Events</strong>.
-                        <br>
-                        Xuanda Chen, Yuan Jia and Ziyu Xiong<br>
-                        <a class="buttan nf"
-                           href="https://ieeexplore.ieee.org/abstract/document/8706644">ISCSLP 2018</a>
-                        <a class="buttan free"
-                           href="https://ieeexplore.ieee.org/abstract/document/8706644">ePrint</a>
-                        <a class="buttan aux"
-                           href="">Slides</a>
-                    </li>
-
-                    <li class="smaller-font">
-                        <strong>The Trajectory of Voice Onset Time with Vocal Aging</strong>.
-                        <br>
-                        Xuanda Chen, Ziyu Xiong and Jian Hu<br>
-                        <a class="buttan nf"
-                           href="https://arxiv.org/pdf/1810.07030.pdf">Interspeech 2018</a>
-                        <a class="buttan free"
-                           href="https://arxiv.org/pdf/1810.07030.pdf">ePrint</a>
-                        <a class="buttan aux"
-                           href="">Slides</a>
-                    </li>
-
-                    <li class="smaller-font">
-                        <strong>An Empirical Case Study of Children's Perception and Production of Stop Consonants
-                        </strong>.
-                        <br>
-                        Jian Hu, Xuanda Chen and Qingyu Wu<br>
-                        <a class="buttan nf"
-                           href="https://arxiv.org/pdf/1810.07030.pdf">JHU 2017</a>
-                        <a class="buttan free"
-                           href="https://arxiv.org/pdf/1810.07030.pdf">ePrint</a>
-                        <a class="buttan aux"
-                           href="">Slides</a>
-                    </li>
-
-                </ul>
-
-            </div>
-
-            <div class="col-md-8">
-                <h2 id="teaching">Teaching</h2>
-
-                <p> I am TAing (also a guest lecturer) the Fall 2023 course "Speech Science" at McGill. </p>
-
-                <p>I used to TA LING201 at McGill. Here are some materials.</p>
-
-                <ul>
-                    <li><a href="./LabSlides/Conf 1 - Introduction to Linguistics.pdf"
-                           ,
-                           target='_blank'>Conf 1 - Introduction to Linguistics</a></li>
-
-                    <li><a href="./LabSlides/Conf 2 - Phonectics.pdf"
-                           ,
-                           target='_blank'>Conf 2 - Phonectics</a></li>
-
-                    <li><a href="./LabSlides/Conf 3 - Phonology.pdf"
-                           ,
-                           target='_blank'>Conf 3 - Phonology</a></li>
-
-                    <li><a href="./LabSlides/Conf 4 - Syntax.pdf"
-                           ,
-                           target='_blank'>Conf 4 - Syntax</a></li>
-
-                    <li><a href="./LabSlides/Conf 5 - Semantics.pdf"
-                           ,
-                           target='_blank'>Conf 5 - Semantics</a></li>
-
-                    <li><a href="./LabSlides/Conf 6 - Psycholinguistics.pdf"
-                           ,
-                           target='_blank'>Conf 6 - Psycholinguistics</a></li>
-                </ul>
-
-                <h2 id="notes">Notes</h2>
-
-                <p>Useful notes, to include a variety of topics in the future.</p>
-
-            </div>
-
-        </div>
-
-    </div>
-
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
 
 </body>
 
