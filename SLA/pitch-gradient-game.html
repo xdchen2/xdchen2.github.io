@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird Discrimination Test</title>
+    <script src="http://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
+    <style type="text/css">
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --border-radius: 10px;
+            --box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+            --sky-color: #72d5fd;
+            --ground-color: #e3b04b;
+            --pipe-color: #2ecc71;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* 修改为flex-start以支持滚动 */
+            color: var(--dark-color);
+            line-height: 1.7;
+            font-size: 20px;
+            overflow: auto; /* 允许滚动 */
+            height: auto; /* 高度自适应 */
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 2.5rem;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 20px;
+            margin: 25px 0;
+            overflow: hidden;
+            height: 15px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 35px 0;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        
+        .primary-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        input[type="text"] {
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            width: 300px;
+            margin: 20px 0;
+            transition: var(--transition);
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(74, 111, 165, 0.25);
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .instructions ol {
+            margin-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .keyboard-instruction {
+            background-color: #e7f3ff;
+            border: 2px solid #4a90e2;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .key-display {
+            display: inline-block;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin: 0 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .example-trial {
+            background-color: #fff3cd;
+            border: 2px solid #ffeaa7;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+        
+        .feedback {
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        
+        .correct {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+        }
+        
+        .incorrect {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .trial-counter {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        
+        .sound-indicators {
+            display: flex;
+            justify-content: center;
+            margin: 25px 0;
+        }
+        
+        .sound-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .sound-indicator.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.2);
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.2); }
+            50% { transform: scale(1.4); }
+        }
+        
+        /* Game Elements */
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D8E8 50%, #B0E2FF 100%);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin: 20px 0;
+            border: 3px solid #2c3e50;
+        }
+        
+        #bird {
+            position: absolute;
+            width: 40px;
+            height: 30px;
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #f1c40f;
+            border-radius: 50% 60% 40% 50%;
+            z-index: 10;
+            transition: top 0.2s ease;
+        }
+        
+        #bird.preparing {
+            animation: birdHover 1s ease-in-out infinite;
+        }
+        
+        @keyframes birdHover {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-60%) rotate(-2deg); }
+            75% { transform: translateY(-40%) rotate(2deg); }
+        }
+        
+        #bird::before {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            border-radius: 50%;
+            top: 8px;
+            left: 25px;
+        }
+        
+        #bird::after {
+            content: "";
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            background-color: black;
+            border-radius: 50%;
+            top: 10px;
+            left: 28px;
+        }
+        
+        .wing {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background-color: #e67e22;
+            border-radius: 50%;
+            top: 15px;
+            left: 5px;
+            transform-origin: right center;
+        }
+        
+        #bird.preparing .wing {
+            animation: flap 0.3s infinite alternate;
+        }
+        
+        @keyframes flap {
+            from { transform: rotate(-15deg); }
+            to { transform: rotate(25deg); }
+        }
+        
+        .pipe {
+            position: absolute;
+            width: 70px;
+            background-color: var(--pipe-color);
+            border: 3px solid #27ae60;
+            box-sizing: border-box;
+            transition: left 4s linear;
+        }
+        
+        .pipe-top {
+            top: 0;
+            border-bottom: 3px solid #27ae60;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .pipe-bottom {
+            bottom: 0;
+            border-top: 3px solid #27ae60;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        #ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 30px;
+            background-color: var(--ground-color);
+            border-top: 5px solid #c39c4d;
+            z-index: 5;
+        }
+        
+        #score-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 0 #000;
+            z-index: 20;
+        }
+        
+        #game-over, #level-complete {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
+        .cloud {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            z-index: 1;
+        }
+        
+        .cloud.animated {
+            animation: cloudMove 8s linear infinite;
+        }
+        
+        @keyframes cloudMove {
+            from { transform: translateX(-50px); }
+            to { transform: translateX(50px); }
+        }
+        
+        .cloud::before, .cloud::after {
+            content: "";
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .waiting-prompt {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: var(--border-radius);
+            border: 2px dashed #4a90e2;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+                font-size: 18px;
+            }
+            
+            .container {
+                padding: 30px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.7rem;
+            }
+            
+            .button-container {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            input[type="text"] {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            #game-container {
+                height: 300px;
+            }
+            
+            .key-display {
+                font-size: 1.1rem;
+                padding: 8px 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+                font-size: 16px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .sound-indicator {
+                width: 35px;
+                height: 35px;
+                margin: 0 10px;
+                font-size: 1.1rem;
+            }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+            }
+            
+            #game-container {
+                height: 250px;
+            }
+            
+            #bird {
+                width: 30px;
+                height: 22px;
+                left: 60px;
+            }
+            
+            #bird::before {
+                width: 11px;
+                height: 11px;
+                top: 6px;
+                left: 19px;
+            }
+            
+            #bird::after {
+                width: 5px;
+                height: 5px;
+                top: 7px;
+                left: 21px;
+            }
+            
+            .pipe {
+                width: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header id="instructions">
+            <h1>Flappy Bird Auditory Discrimination Test</h1>
+            <div class="instructions">
+                <p><strong>Welcome to the Flappy Bird auditory discrimination experiment!</strong> Please read the instructions carefully:</p>
+                <ol>
+                    <li>In each trial, you will hear <strong>three sounds</strong> as your bird prepares to fly through pipes.</li>
+                    <li><strong>One of the sounds will be different</strong> from the other two (either the first sound or the third sound).</li>
+                    <li>Your task is to identify which sound is different by pressing the correct key:</li>
+                </ol>
+                
+                <div class="keyboard-instruction">
+                    <h3>Keyboard Controls:</h3>
+                    <p>Press <span class="key-display">F</span> if the <strong>FIRST</strong> sound (Sound 1) is different</p>
+                    <p>Press <span class="key-display">J</span> if the <strong>THIRD</strong> sound (Sound 3) is different</p>
+                </div>
+                
+                <div class="example-trial">
+                    <h3>🔊 Example Trial Walkthrough:</h3>
+                    <p><strong>Step 1:</strong> You will see the bird preparing to fly and hear three sounds in sequence: Sound 1 → Sound 2 → Sound 3</p>
+                    <p><strong>Step 2:</strong> Listen carefully and identify which one sounds different</p>
+                    <p><strong>Step 3:</strong> Press <span class="key-display">F</span> (for Sound 1) or <span class="key-display">J</span> (for Sound 3)</p>
+                    <p><strong>Step 4:</strong> If correct, your bird will fly through successfully! If incorrect, your bird will crash into the pipe.</p>
+                </div>
+                
+                <ol start="4">
+                    <li><strong>Correct answers</strong> help your bird fly through the pipes and earn points!</li>
+                    <li><strong>Incorrect answers</strong> cause your bird to crash into the pipes.</li>
+                    <li>The test will take approximately <strong>10-15 minutes</strong> to complete.</li>
+                    <li>Please ensure you're in a <strong>quiet environment</strong> and using <strong>headphones</strong> for best results.</li>
+                </ol>
+                
+                <div class="keyboard-instruction">
+                    <p><strong>Remember:</strong> <span class="key-display">F</span> = First sound different | <span class="key-display">J</span> = Third sound different</p>
+                </div>
+            </div>
+        </header>
+        
+        <header id="questions">
+            <h2>Participant Information</h2>
+            <p>Please enter your subject ID to begin:</p>
+            <input type="text" id="ID" placeholder="Enter your subject ID">
+        </header>
+        
+        <header id="trial" class="hidden">
+            <h1>Which sound is different?</h1>
+            <div class="trial-counter">Trial: <span id="current-trial">1</span> of <span id="total-trials">75</span></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="game-container">
+                <div id="bird" class="preparing">
+                    <div class="wing"></div>
+                </div>
+                <div id="ground"></div>
+                <div id="score-display">Score: 0</div>
+                <div id="game-over">
+                    <h2>💥 Oops!</h2>
+                    <p>Your bird crashed into the pipe!</p>
+                    <p><em>The correct answer was different.</em></p>
+                    <button class="primary-btn" id="continue-btn">Continue to Next Trial</button>
+                </div>
+                <div id="level-complete">
+                    <h2>🎉 Excellent!</h2>
+                    <p>Your bird flew through successfully!</p>
+                    <p><em>Great job identifying the different sound!</em></p>
+                    <button class="primary-btn" id="next-btn">Continue to Next Trial</button>
+                </div>
+            </div>
+            
+            <p>Listen carefully to the three sounds, then press <span class="key-display">F</span> or <span class="key-display">J</span>:</p>
+            
+            <div class="sound-indicators">
+                <div class="sound-indicator" id="sound1">1</div>
+                <div class="sound-indicator" id="sound2">2</div>
+                <div class="sound-indicator" id="sound3">3</div>
+            </div>
+            
+            <div class="waiting-prompt hidden" id="waiting-prompt">
+                <p><strong>🎧 Now make your choice:</strong></p>
+                <p>Press <span class="key-display">F</span> if Sound 1 was different</p>
+                <p>Press <span class="key-display">J</span> if Sound 3 was different</p>
+            </div>
+        </header>
+        
+        <header id="thanks" class="hidden">
+            <h1>Thank You!</h1>
+            <p>The experiment is now complete. We appreciate your participation.</p>
+            <div class="instructions">
+                <p id="results"></p>
+            </div>
+        </header>
+        
+        <div class="button-container">
+            <button type="button" id="startButton" class="primary-btn">Begin Test</button>
+            <button type="button" id="restartButton" class="primary-btn hidden">Continue</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // 变量声明
+        var current_step = 51;
+        var max_trials = 75;
+        var num_steps = 100;
+        var target_reversals = 7;
+        var num_reversals = 0;
+        var current_trial = 0;
+        var num_correct = 0;
+        var timeoutID;
+        var last_correct = -1;
+        var step_sizes = [10, 5, 2, 1, 1, 1, 1, 1];
+        var is_correct;
+        var correct_answer;
+        var audio_array = [];
+        var audio_files = [];
+        var reversals = 0;
+        var startTime;
+        var subject_ID;
+        var stim_order = [];
+        var score = 0;
+        var waitingForResponse = false;
+        var actual_answer = '';
+        var animationIntervals = [];
+        var skipFeedback = true; // 新增：控制是否跳过反馈
+        
+        // 初始化音频元素
+        for (var i = 1; i < num_steps + 1; i++) {
+            var stim_sound = "pitch/" + i.toString() + ".flac";
+            var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
+            $('body').append(toAppend);
+        }
+        
+        var toAppend = '<audio id="track1b"><source src="pitch/1.flac"/></audio>';
+        $('body').append(toAppend);
+        
+        // 初始化刺激顺序
+        for (var i = 0; i < Math.floor(max_trials/2); i++) {
+            stim_order.push(0);
+        }
+        
+        for (var i = Math.floor(max_trials/2); i < max_trials; i++) {
+            stim_order.push(1);
+        }
+        
+        stim_order = shuffle(stim_order);
+        
+        // 键盘事件监听
+        document.addEventListener('keydown', function(event) {
+            if (!waitingForResponse) return;
+            
+            if (event.key.toLowerCase() === 'f') {
+                handleKeyboardResponse('1');
+            } else if (event.key.toLowerCase() === 'j') {
+                handleKeyboardResponse('3');
+            }
+        });
+        
+        function handleKeyboardResponse(answer) {
+            if (!waitingForResponse) return;
+            
+            waitingForResponse = false;
+            $('#waiting-prompt').hide();
+            actual_answer = answer;
+            
+            var isCorrect = (actual_answer == correct_answer);
+            
+            // 停止所有动画
+            stopAllAnimations();
+            
+            // 直接进入下一个试验，跳过反馈界面
+            if (skipFeedback) {
+                if (isCorrect) {
+                    updateScore(20);
+                    animateBirdSuccess();
+                } else {
+                    animateBirdCrash();
+                }
+                
+                // 短暂延迟后直接进入下一个试验
+                setTimeout(function() {
+                    resetBirdPosition();
+                    iterateAndProgress();
+                }, 800);
+            } else {
+                // 原来的反馈逻辑
+                if (isCorrect) {
+                    updateScore(20);
+                    animateBirdSuccess();
+                    setTimeout(function() {
+                        showLevelComplete();
+                    }, 1500);
+                } else {
+                    animateBirdCrash();
+                    setTimeout(function() {
+                        showGameOver();
+                    }, 1500);
+                }
+            }
+        }
+        
+        // 文档加载完成后的初始化
+        $(document).ready(function () {
+            $('#restartButton').hide();
+            $('#questions').show();
+            $('#instructions').hide();
+            $('#trial').hide();
+            $('#thanks').hide();
+            $('#startButton').click(init);
+            $('#thanks').hide();
+            $('#restartButton').click(start);
+            $('#continue-btn').click(hideGameOver);
+            $('#next-btn').click(hideLevelComplete);
+            
+            // 更新试验计数器
+            $('#total-trials').text(max_trials);
+            
+            // 创建云朵装饰
+            createClouds();
+        });
+        
+        function createClouds() {
+            const gameContainer = document.getElementById('game-container');
+            for (let i = 0; i < 6; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                const size = 25 + Math.random() * 35;
+                cloud.style.width = size + 'px';
+                cloud.style.height = size / 1.5 + 'px';
+                cloud.style.top = (20 + Math.random() * 120) + 'px';
+                cloud.style.left = (Math.random() * 700) + 'px';
+                
+                // 添加云朵内部结构
+                const before = document.createElement('div');
+                before.style.cssText = `
+                    position: absolute;
+                    width: ${size * 0.6}px;
+                    height: ${size * 0.6}px;
+                    background-color: white;
+                    border-radius: 50%;
+                    top: -${size * 0.2}px;
+                    left: ${size * 0.1}px;
+                `;
+                
+                const after = document.createElement('div');
+                after.style.cssText = `
+                    position: absolute;
+                    width: ${size * 0.8}px;
+                    height: ${size * 0.8}px;
+                    background-color: white;
+                    border-radius: 50%;
+                    top: -${size * 0.3}px;
+                    right: ${size * 0.1}px;
+                `;
+                
+                cloud.appendChild(before);
+                cloud.appendChild(after);
+                gameContainer.appendChild(cloud);
+            }
+        }
+        
+        function startCloudAnimation() {
+            $('.cloud').addClass('animated');
+        }
+        
+        function stopCloudAnimation() {
+            $('.cloud').removeClass('animated');
+        }
+        
+        function startAllAnimations() {
+            // 开始云朵动画
+            startCloudAnimation();
+            
+            // 开始小鸟准备动画
+            $('#bird').addClass('preparing');
+        }
+        
+        function stopAllAnimations() {
+            // 停止云朵动画
+            stopCloudAnimation();
+            
+            // 停止小鸟准备动画
+            $('#bird').removeClass('preparing');
+            
+            // 清除所有定时器
+            animationIntervals.forEach(interval => clearInterval(interval));
+            animationIntervals = [];
+        }
+        
+        function updateScore(points) {
+            score += points;
+            $('#score-display').text('Score: ' + score);
+            
+            // 添加分数变化动画
+            $('#score-display').css('transform', 'scale(1.3)');
+            setTimeout(() => {
+                $('#score-display').css('transform', 'scale(1)');
+            }, 400);
+        }
+        
+        function animateBirdCrash() {
+            $('#bird').removeClass('preparing');
+            $('#bird').css('transition', 'all 0.8s ease');
+            $('#bird').css('top', '85%');
+            $('#bird').css('transform', 'translateY(-50%) rotate(90deg)');
+            updateScore(-10);
+        }
+        
+        function animateBirdSuccess() {
+            $('#bird').removeClass('preparing');
+            
+            // 小鸟飞行通过动画
+            $('#bird').css('transition', 'all 0.8s ease');
+            $('#bird').css('left', '400px');
+            $('#bird').css('transform', 'translateY(-50%) rotate(-10deg)');
+            
+            // 添加翅膀拍打动画
+            $('#bird .wing').css('animation', 'flap 0.2s infinite alternate');
+        }
+        
+        function resetBirdPosition() {
+            $('#bird').css('transition', 'top 0.2s ease, left 0.2s ease, transform 0.2s ease');
+            $('#bird').css('top', '50%');
+            $('#bird').css('left', '80px');
+            $('#bird').css('transform', 'translateY(-50%) rotate(0deg)');
+            $('#bird .wing').css('animation', '');
+        }
+        
+        function showGameOver() {
+            $('#game-over').fadeIn();
+        }
+        
+        function hideGameOver() {
+            $('#game-over').fadeOut();
+            resetBirdPosition();
+            
+            // 继续实验
+            setTimeout(function() {
+                iterateAndProgress();
+            }, 500);
+        }
+        
+        function showLevelComplete() {
+            $('#level-complete').fadeIn();
+        }
+        
+        function hideLevelComplete() {
+            $('#level-complete').fadeOut();
+            resetBirdPosition();
+            
+            // 继续实验
+            setTimeout(function() {
+                iterateAndProgress();
+            }, 500);
+        }
+        
+        function createPipes() {
+            // 清除之前的管道
+            $('.pipe').remove();
+            
+            const gameContainer = $('#game-container');
+            const containerHeight = gameContainer.height();
+            const gapHeight = 150; // 管道之间的间隙高度
+            const pipeWidth = 70;
+            
+            // 创建多组管道，高度错落有致
+            for (let i = 0; i < 3; i++) {
+                const pipeLeft = 250 + (i * 150);
+                
+                // 创建上方管道
+                const pipeTop = $('<div class="pipe pipe-top"></div>');
+                const topPipeHeight = 50 + Math.random() * 150 + (i * 20); // 错落有致的高度
+                
+                pipeTop.css({
+                    height: topPipeHeight + 'px',
+                    left: pipeLeft + 'px'
+                });
+                
+                // 创建下方管道
+                const pipeBottom = $('<div class="pipe pipe-bottom"></div>');
+                const bottomPipeHeight = containerHeight - topPipeHeight - gapHeight - 30; // 30是地面高度
+                
+                pipeBottom.css({
+                    height: bottomPipeHeight + 'px',
+                    left: pipeLeft + 'px',
+                    bottom: '30px'
+                });
+                
+                gameContainer.append(pipeTop);
+                gameContainer.append(pipeBottom);
+            }
+        }
+        
+        function init() {
+            subject_ID = document.getElementById("ID").value;
+            if (!subject_ID) {
+                alert("Please enter your subject ID to continue.");
+                return;
+            }
+            
+            startTime = new Date();
+            $('#startButton').hide();
+            $('#questions').hide();
+            $('#instructions').show();
+            $('#restartButton').show();
+            $('#ID').prop('disabled', true);
+            
+            // 滚动到顶部
+            window.scrollTo(0, 0);
+        }
+        
+        function updateProgressBar() {
+            var progress = (current_trial / max_trials) * 100;
+            $('#progress-bar').css('width', progress + '%');
+            $('#current-trial').text(current_trial + 1);
+        }
+        
+        function animateSoundIndicator(index) {
+            $('.sound-indicator').removeClass('active');
+            $('#sound' + index).addClass('active');
+            
+            setTimeout(function() {
+                $('#sound' + index).removeClass('active');
+            }, 600);
+        }
+        
+        function save_data() {
+            var endTime = new Date();
+            var durationMs = endTime - startTime;
+            var durationSec = (durationMs / 1000).toFixed(2);
+            var durationMin = (durationMs / 1000 / 60).toFixed(1);
+
+            var testString = "";
+            testString += "<h3>Results Summary</h3>";
+            
+            if (num_reversals > 1) {
+                var mean_reversal = reversals / (num_reversals - 1);
+                testString += "Pitch discrimination threshold: " + mean_reversal.toFixed(2);
+            } else {
+                testString += "Insufficient data to calculate threshold";
+            }
+            
+            testString += "<br>Total trials completed: " + current_trial;
+            testString += "<br>Number of reversals: " + num_reversals;
+            testString += "<br>Final Score: " + score;
+            testString += "<br>Test duration: " + durationMin + " minutes";
+            
+            $('#results').html(testString);
+            $('#restartButton').hide();
+            $('#instructions').hide();
+            $('#trial').hide();
+            $('#thanks').show();
+            
+            // 滚动到顶部
+            window.scrollTo(0, 0);
+        }
+        
+        function start() {
+            $('#restartButton').hide();
+            $('#instructions').hide();
+            $('#trial').show();
+            $('#waiting-prompt').hide();
+            waitingForResponse = false;
+            
+            updateProgressBar();
+            resetBirdPosition();
+            
+            // 创建管道障碍物
+            createPipes();
+            
+            // 开始动画
+            startAllAnimations();
+            
+            if (stim_order[current_trial] == 0) {
+                correct_answer = "3";
+                x = document.getElementById('track1');
+                y = document.getElementById('track1b');
+                z = document.getElementById('track' + current_step.toString());
+            } else {
+                correct_answer = "1";
+                x = document.getElementById('track' + current_step.toString());
+                y = document.getElementById('track1');
+                z = document.getElementById('track1b');
+            }
+            
+            x.onended = function () {
+                animateSoundIndicator(1);
+                timeoutID = window.setTimeout(function() {
+                    y.play();
+                    animateSoundIndicator(2);
+                }, 600);
+            }
+            
+            y.onended = function () {
+                timeoutID = window.setTimeout(function() {
+                    z.play();
+                    animateSoundIndicator(3);
+                }, 600);
+            }
+            
+            z.onended = function () {
+                timeoutID = window.setTimeout(function() {
+                    // 显示等待响应提示
+                    $('#waiting-prompt').show();
+                    waitingForResponse = true;
+                }, 800);
+            }
+            
+            // 播放第一个声音
+            setTimeout(function() {
+                animateSoundIndicator(1);
+                x.play();
+            }, 1000);
+            
+            // 滚动到试验区域
+            window.scrollTo(0, document.getElementById('trial').offsetTop);
+        }
+        
+        function shuffle(array) {
+            var currentIndex = array.length, randomIndex;
+            
+            while (0 !== currentIndex) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            
+            return array;
+        }
+        
+        function iterateAndProgress() {
+            if (actual_answer == correct_answer) {
+                is_correct = 1;
+            } else {
+                is_correct = 0;
+            }
+            
+            // 原有的逻辑处理代码保持不变
+            // 原有的逻辑处理代码保持不变
+            if (num_reversals == 0) {
+                if (last_correct > -1) {
+                    if (last_correct == 1 && is_correct == 0) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) {
+                            reversals += current_step;
+                        }
+                    }
+                    if (last_correct == 0 && is_correct == 1) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) {
+                            reversals += current_step;
+                        }
+                    }
+                }
+                if (is_correct == 1) {
+                    current_step -= step_sizes[num_reversals];
+                }
+                if (is_correct == 0) {
+                    current_step += step_sizes[num_reversals];
+                }
+                last_correct = is_correct;
+            } else {
+                if (last_correct > -1) {
+                    if (last_correct == 1 && is_correct == 0) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) {
+                            reversals += current_step;
+                        }
+                    }
+                    if (last_correct == 0 && is_correct == 1 && num_correct == 1) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) {
+                            reversals += current_step;
+                        }
+                    }
+                }
+                if (is_correct == 1 && num_correct == 1) {
+                    current_step -= step_sizes[num_reversals];
+                }
+                if (is_correct == 0) {
+                    current_step += step_sizes[num_reversals];
+                }
+                if (is_correct == 0) {
+                    last_correct = is_correct;
+                } else {
+                    if (num_correct == 1) {
+                        last_correct = 1;
+                    }
+                }
+                if (is_correct == 1) {
+                    num_correct += 1;
+                    if (num_correct == 2) {
+                        num_correct = 0;
+                    }
+                } else {
+                    num_correct = 0;
+                }
+            }
+            
+            if (current_step < 2) {
+                current_step = 2;
+            }
+            if (current_step > 101) {
+                current_step = 101;
+            }
+            
+            current_trial += 1;
+            
+            if (current_trial == max_trials || num_reversals == target_reversals) {
+                save_data();
+            } else {
+                start();
+            }
+        }
+    </script>
+</body>
+</html>
