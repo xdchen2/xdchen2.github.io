@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>听觉精度测试门户</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            width: 350px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-header {
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+        
+        .full-test .card-header {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        }
+        
+        .quick-test .card-header {
+            background: linear-gradient(135deg, #00cdac, #02aab0);
+        }
+        
+        .card-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .card-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-body p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .test-selection {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .test-selection h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #6e8efb;
+        }
+        
+        .test-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .test-option {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-option:hover {
+            background: #e9ecef;
+            transform: translateY(-5px);
+        }
+        
+        .test-option i {
+            font-size: 2.5rem;
+            color: #6e8efb;
+            margin-bottom: 15px;
+        }
+        
+        .test-option h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .test-option p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .card {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>听觉精度测试门户</h1>
+            <p>欢迎使用我们的听觉感知研究平台。请选择您要进行的测试类型。</p>
+        </header>
+        
+        <div class="card-container">
+            <div class="card full-test">
+                <div class="card-header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h2>完整测试</h2>
+                </div>
+                <div class="card-body">
+                    <p>完整测试包含所有听觉维度评估，包括共振峰、音高、时长和上升时间。测试时间约为20-30分钟。</p>
+                    <button class="btn" onclick="selectTestType('full')">选择完整测试</button>
+                </div>
+            </div>
+            
+            <div class="card quick-test">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h2>快速测试</h2>
+                </div>
+                <div class="card-body">
+                    <p>快速测试允许您选择特定的听觉维度进行测试。测试时间约为5-10分钟。</p>
+                    <button class="btn" onclick="selectTestType('quick')">选择快速测试</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="testSelection" class="test-selection">
+            <h2 id="testTypeTitle">选择测试类型</h2>
+            <div class="test-options">
+                <div class="test-option" onclick="startTest('formant')">
+                    <i class="fas fa-wave-square"></i>
+                    <h3>共振峰测试</h3>
+                    <p>测量对声音共振频率变化的感知能力</p>
+                </div>
+                <div class="test-option" onclick="startTest('pitch')">
+                    <i class="fas fa-music"></i>
+                    <h3>音高测试</h3>
+                    <p>评估对声音音高变化的辨别能力</p>
+                </div>
+                <div class="test-option" onclick="startTest('duration')">
+                    <i class="fas fa-clock"></i>
+                    <h3>时长测试</h3>
+                    <p>测试对声音持续时间差异的感知</p>
+                </div>
+                <div class="test-option" onclick="startTest('risetime')">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>上升时间测试</h3>
+                    <p>评估对声音起始包络变化的感知</p>
+                </div>
+            </div>
+            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> 返回</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>听觉感知研究实验室 © 2023 | 科学测试平台</p>
+    </footer>
+
+    <script>
+        function selectTestType(type) {
+            document.querySelector('.card-container').style.display = 'none';
+            document.getElementById('testSelection').style.display = 'block';
+            
+            if (type === 'full') {
+                document.getElementById('testTypeTitle').textContent = '完整测试 - 选择测试项目';
+            } else {
+                document.getElementById('testTypeTitle').textContent = '快速测试 - 选择测试项目';
+            }
+        }
+        
+        function goBack() {
+            document.getElementById('testSelection').style.display = 'none';
+            document.querySelector('.card-container').style.display = 'flex';
+        }
+        
+        function startTest(testType) {
+            let filename;
+            
+            switch(testType) {
+                case 'formant':
+                    // 检查文件是否存在，优先使用gradient版本
+                    filename = checkFileExists('formant-gradient.html') ? 'formant-gradient.html' : 'formant-quest.html';
+                    break;
+                case 'pitch':
+                    filename = checkFileExists('pitch-gradient.html') ? 'pitch-gradient.html' : 'pitch-quest.html';
+                    break;
+                case 'duration':
+                    filename = 'duration-test.html'; // 假设的文件名
+                    alert('即将开始时长测试');
+                    return;
+                case 'risetime':
+                    filename = 'risetime-test.html'; // 假设的文件名
+                    alert('即将开始上升时间测试');
+                    return;
+                default:
+                    alert('测试类型未定义');
+                    return;
+            }
+            
+            alert(`即将开始测试: ${filename}`);
+            // 实际使用时应该取消下一行的注释
+            // window.location.href = filename;
+        }
+        
+        // 用于检查文件是否存在的模拟函数
+        // 在实际应用中，您可能需要使用AJAX请求来检查文件是否存在
+        function checkFileExists(filename) {
+            // 这里只是模拟，假设所有gradient文件都存在
+            return filename.includes('gradient');
+        }
+    </script>
+</body>
+</html>

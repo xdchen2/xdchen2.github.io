@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditory Precision Test Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            width: 350px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-header {
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+        
+        .full-test .card-header {
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+        }
+        
+        .quick-test .card-header {
+            background: linear-gradient(135deg, #00cdac, #02aab0);
+        }
+        
+        .card-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .card-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        .card-body p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .test-selection {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .test-selection h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #6e8efb;
+        }
+        
+        .test-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .test-option {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-option:hover {
+            background: #e9ecef;
+            transform: translateY(-5px);
+        }
+        
+        .test-option i {
+            font-size: 2.5rem;
+            color: #6e8efb;
+            margin-bottom: 15px;
+        }
+        
+        .test-option h3 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .test-option p {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .card {
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Auditory Precision Test Portal</h1>
+            <p>Welcome to our auditory perception research platform. Please select the type of test you would like to perform.</p>
+        </header>
+        
+        <div class="card-container">
+            <div class="card full-test">
+                <div class="card-header">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h2>Standard Test</h2>
+                </div>
+                <div class="card-body">
+                    <p>The standard test includes assessment of auditory dimensions: formant, pitch, duration, and rise time. The test takes approximately 20-30 minutes.</p>
+                    <button class="btn" onclick="selectTestType('complete')">Select Standard Test</button>
+                </div>
+            </div>
+            
+            <div class="card quick-test">
+                <div class="card-header">
+                    <i class="fas fa-bolt"></i>
+                    <h2>Quick Test</h2>
+                </div>
+                <div class="card-body">
+                    <p>The quick test is a faster way to assess auditory dimensions, though it may be less accurate. It takes approximately 10 to 15 minutes to complete.</p>
+                    <button class="btn" onclick="selectTestType('quick')">Select Quick Test</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div id="testSelection" class="test-selection">
+            <h2 id="testTypeTitle">Select Test Type</h2>
+            <div class="test-options">
+                <div class="test-option" onclick="startTest('formant')">
+                    <i class="fas fa-wave-square"></i>
+                    <h3>Formant Test</h3>
+                    <p>Measure the perception of changes in sound resonance frequencies</p>
+                </div>
+                <div class="test-option" onclick="startTest('pitch')">
+                    <i class="fas fa-music"></i>
+                    <h3>Pitch Test</h3>
+                    <p>Evaluate the ability to discriminate changes in sound pitch</p>
+                </div>
+                <div class="test-option" onclick="startTest('duration')">
+                    <i class="fas fa-clock"></i>
+                    <h3>Duration Test</h3>
+                    <p>Test the perception of differences in sound duration</p>
+                </div>
+                <div class="test-option" onclick="startTest('risetime')">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Rise Time Test</h3>
+                    <p>Evaluate the perception of changes in sound onset envelope</p>
+                </div>
+            </div>
+            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>SLA-Speech-Tools © 2025 | Scientific Testing Platform</p>
+    </footer>
+
+    <script>
+        let currentTestType = '';
+        
+        function selectTestType(type) {
+            document.querySelector('.card-container').style.display = 'none';
+            document.getElementById('testSelection').style.display = 'block';
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            currentTestType = type;
+            
+            if (type === 'complete') {
+                document.getElementById('testTypeTitle').textContent = 'Standard Test - Select Test Items';
+                animateProgress(33);
+            } else {
+                document.getElementById('testTypeTitle').textContent = 'Quick Test - Select Test Items';
+                animateProgress(50);
+            }
+        }
+        
+        function goBack() {
+            document.getElementById('testSelection').style.display = 'none';
+            document.querySelector('.card-container').style.display = 'flex';
+            document.getElementById('progressContainer').style.display = 'none';
+            animateProgress(0);
+        }
+        
+        function startTest(testType) {
+            let filename;
+            
+            switch(testType) {
+                case 'formant':
+                    // Check which formant test file is available
+                    filename = checkFileExists('formant-gradient.html') ? 'formant-gradient.html' : 'formant-quest.html';
+                    break;
+                case 'pitch':
+                    // Check which pitch test file is available
+                    filename = checkFileExists('pitch-gradient.html') ? 'pitch-gradient.html' : 'pitch-quest.html';
+                    break;
+                case 'duration':
+                    // Check which pitch test file is available
+                    filename = checkFileExists('duration-gradient.html') ? 'duration-gradient.html' : 'duration-quest.html';
+                    // filename = 'duration-test.html';
+                    break;
+                case 'risetime':
+                    // Check which pitch test file is available
+                    filename = checkFileExists('risetime-gradient.html') ? 'risetime-gradient.html' : 'risetime-quest.html';
+                    // filename = 'risetime-test.html';
+                    break;
+                default:
+                    alert('Test type not defined');
+                    return;
+            }
+            
+            // Show loading progress
+            animateProgress(100, function() {
+                // Simulate loading delay
+                setTimeout(function() {
+                    // alert(`Starting test: ${filename}`);
+                    // In a real scenario, you would redirect to the test page:
+                    window.location.href = filename;
+                }, 800);
+            });
+        }
+        
+        // Function to check if a file exists (simulated)
+        function checkFileExists(filename) {
+            // This is a simulation - in a real scenario, you would use AJAX to check
+            return Math.random() > 0.5; // Randomly return true or false for simulation
+        }
+        
+        // Function to animate progress bar
+        function animateProgress(percent, callback) {
+            const progressBar = document.getElementById('progressBar');
+            let width = parseInt(progressBar.style.width || '0');
+            const id = setInterval(frame, 15);
+            
+            function frame() {
+                if (width >= percent) {
+                    clearInterval(id);
+                    if (callback) callback();
+                } else {
+                    width++;
+                    progressBar.style.width = width + '%';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
