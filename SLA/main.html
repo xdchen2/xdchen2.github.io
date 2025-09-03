@@ -346,28 +346,20 @@
         
         function startTest(testType) {
             let filename;
-            let isGamified = currentTestType === 'gamified';
             
-            switch(testType) {
-                case 'formant':
-                    filename = isGamified ? 'formant-gradient-game.html' :
-                              checkFileExists('formant-gradient.html') ? 'formant-gradient.html' : 'formant-quest.html';
-                    break;
-                case 'pitch':
-                    filename = isGamified ? 'pitch-gradient-game.html' :
-                              checkFileExists('pitch-gradient.html') ? 'pitch-gradient.html' : 'pitch-quest.html';
-                    break;
-                case 'duration':
-                    filename = isGamified ? 'duration-gradient-game.html' :
-                              checkFileExists('duration-gradient.html') ? 'duration-gradient.html' : 'duration-quest.html';
-                    break;
-                case 'risetime':
-                    filename = isGamified ? 'risetime-gradient-game.html' :
-                              checkFileExists('risetime-gradient.html') ? 'risetime-gradient.html' : 'risetime-quest.html';
-                    break;
-                default:
-                    alert('Test type not defined');
-                    return;
+            // 根据当前选择的测试类型确定文件名
+            if (currentTestType === 'complete') {
+                // Standard Test 使用 gradient.html 文件
+                filename = testType + '-gradient.html';
+            } else if (currentTestType === 'gamified') {
+                // Gamified Test 使用 gradient-game.html 文件
+                filename = testType + '-gradient-game.html';
+            } else if (currentTestType === 'quick') {
+                // Quick Test 使用 quest.html 文件
+                filename = testType + '-quest.html';
+            } else {
+                alert('Test type not defined');
+                return;
             }
             
             animateProgress(100, function() {
@@ -375,10 +367,6 @@
                     window.location.href = filename;
                 }, 600);
             });
-        }
-        
-        function checkFileExists(filename) {
-            return Math.random() > 0.5;
         }
         
         function animateProgress(percent, callback) {

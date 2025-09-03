@@ -700,13 +700,13 @@
         
         // 初始化音频元素
         for (var i = 1; i < num_steps + 1; i++) {
-            var stim_sound = "pitch/" + i.toString() + ".flac";
+            var stim_sound = "duration/" + i.toString() + ".flac";
             var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
             $('body').append(toAppend);
             audioElements.push("track" + i.toString());
         }
         
-        var toAppend = '<audio id="track1b"><source src="pitch/1.flac"/></audio>';
+        var toAppend = '<audio id="track1b"><source src="duration/1.flac"/></audio>';
         $('body').append(toAppend);
         audioElements.push("track1b");
         
@@ -805,9 +805,9 @@
             // 收集所有需要预加载的音频文件
             var audioFiles = [];
             for (var i = 1; i <= num_steps; i++) {
-                audioFiles.push("pitch/" + i.toString() + ".flac");
+                audioFiles.push("duration/" + i.toString() + ".flac");
             }
-            audioFiles.push("pitch/1.flac"); // track1b
+            audioFiles.push("duration/1.flac"); // track1b
             
             // 预加载所有音频文件
             loadAudioFiles(audioFiles);
@@ -1080,7 +1080,7 @@
             
             if (num_reversals > 1) {
                 var mean_reversal = reversals / (num_reversals - 1);
-                testString += "Pitch discrimination threshold: " + mean_reversal.toFixed(2);
+                testString += "Duration discrimination threshold: " + mean_reversal.toFixed(2);
             } else {
                 testString += "Insufficient data to calculate threshold";
             }
