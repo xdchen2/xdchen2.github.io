@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>音高辨别测试 (QUEST)</title>
+    <script src="https://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
+
+    <script src="./jsQUEST.js" type="text/javascript"></script>
+    <script src="./numeric.min.js" type="text/javascript"></script>
+
+    <style type="text/css">
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff6b6b;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --border-radius: 10px;
+            --box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        * { box-sizing: border-box; margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 30px;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            color:var(--dark-color); line-height:1.7; font-size:20px;
+        }
+        .container { background-color:white; border-radius:var(--border-radius); box-shadow:var(--box-shadow); padding:40px; width:100%; max-width:900px; margin:0 auto; transition:var(--transition); }
+        header { margin-bottom:30px; text-align:center; padding-bottom:25px; border-bottom:2px solid #eee; }
+        h1 { color:var(--primary-color); margin-bottom:20px; font-weight:600; font-size:2.5rem; }
+        h2 { font-size:2rem; margin-bottom:20px; }
+        p { margin-bottom:20px; font-size:1.25rem; }
+        .hidden { display:none; }
+        .progress-container { width:100%; background-color:#e9ecef; border-radius:20px; margin:25px 0; overflow:hidden; height:15px; }
+        .progress-bar { height:100%; background-color:var(--primary-color); border-radius:20px; width:0%; transition:width 0.5s ease; }
+        .button-container { display:flex; justify-content:center; gap:25px; margin:35px 0; }
+        button { padding:15px 30px; border:none; border-radius:var(--border-radius); cursor:pointer; font-size:1.25rem; font-weight:600; transition:var(--transition); box-shadow:0 4px 6px rgba(0,0,0,0.15); }
+        .primary-btn { background-color:var(--primary-color); color:white; }
+        .primary-btn:hover { background-color:var(--secondary-color); transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.2); }
+        .response-btn { font-size:2rem; width:120px; height:120px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 20px; }
+        .response-btn:hover { transform:scale(1.08); }
+        #1Button { background-color:#4CAF50; color:white; }
+        #3Button { background-color:#F44336; color:white; }
+        .instructions { background-color:#f8f9fa; padding:25px; border-radius:var(--border-radius); margin:25px 0; }
+        .instructions ol { text-align:left; margin-left:25px; margin-bottom:20px; }
+        .instructions li { margin-bottom:15px; font-size:1.1rem; }
+        .feedback { padding:20px; margin:25px 0; border-radius:var(--border-radius); text-align:center; font-weight:bold; font-size:1.25rem; }
+        .correct { background-color:rgba(40,167,69,0.2); color:var(--success-color); }
+        .incorrect { background-color:rgba(220,53,69,0.2); color:#dc3545; }
+        .trial-counter { text-align:center; font-size:1.1rem; color:#6c757d; margin-bottom:20px; }
+        .sound-indicators { display:flex; justify-content:center; margin:25px 0; }
+        .sound-indicator { width:40px; height:40px; border-radius:50%; background-color:#ddd; margin:0 15px; display:flex; align-items:center; justify-content:center; transition:var(--transition); font-size:1.2rem; font-weight:bold; }
+        .sound-indicator.active { background-color:var(--primary-color); color:white; transform:scale(1.2); }
+        .preload-container { margin:20px 0; text-align:center; }
+        .preload-status { margin-top:10px; font-size:1rem; color:var(--dark-color); }
+        @media (max-width:768px) {
+            body { padding:20px; font-size:18px; }
+            .container { padding:30px; }
+            h1 { font-size:2rem; } h2 { font-size:1.7rem; }
+            .response-btn { width:100px; height:100px; font-size:1.7rem; }
+            .button-container { flex-wrap:wrap; gap:15px; }
+        }
+        @media (max-width:480px) {
+            body { padding:15px; font-size:16px; }
+            .container { padding:20px; } h1{font-size:1.8rem;} h2{font-size:1.5rem;}
+            .response-btn { width:80px; height:80px; font-size:1.5rem; margin:0 10px; }
+            .sound-indicator { width:35px; height:35px; margin:0 10px; font-size:1.1rem; }
+            button { padding:12px 20px; font-size:1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header id="instructions">
+            <h1>音高辨别测试</h1>
+            <div class="instructions">
+                <p>欢迎参加听觉辨别实验。请仔细阅读说明：</p>
+                <ol>
+                    <li>在每个试次中，您将听到三个声音（AXB范式）。</li>
+                    <li>其中一个声音与其他两个不同。</li>
+                    <li>您的任务是识别哪个声音不同 - <strong>第一个</strong>或<strong>第三个</strong>。</li>
+                    <li>通过点击相应的按钮（1或3）来回答。</li>
+                    <li>测试大约需要10-15分钟完成。</li>
+                </ol>
+                <p>请确保您在安静的环境中并使用耳机，以获得最佳效果。</p>
+            </div>
+        </header>
+
+        <header id="questions" class="hidden">
+            <h2>准备开始</h2>
+            <p>点击下方按钮开始实验。</p>
+            <div class="preload-container" id="preload-section">
+                <p>正在加载音频文件...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="preload-progress-bar"></div>
+                </div>
+                <p class="preload-status" id="preload-status">0% (0/100)</p>
+            </div>
+        </header>
+
+        <header id="trial" class="hidden">
+            <h1>哪个声音不同？</h1>
+            <div class="trial-counter">试次：<span id="current-trial">1</span> / <span id="total-trials">75</span></div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p>仔细听三个声音，然后选择哪个声音不同：</p>
+
+            <div class="sound-indicators">
+                <div class="sound-indicator" id="sound1">1</div>
+                <div class="sound-indicator" id="sound2">2</div>
+                <div class="sound-indicator" id="sound3">3</div>
+            </div>
+        </header>
+
+        <header id="thanks" class="hidden">
+            <h1>感谢参与！</h1>
+            <p>实验现已完成。我们感谢您的参与。</p>
+            <div class="instructions">
+                <p id="results"></p>
+            </div>
+        </header>
+
+        <div class="button-container">
+            <button type="button" id="startButton" class="primary-btn">开始测试</button>
+            <button type="button" id="restartButton" class="primary-btn hidden">继续</button>
+        </div>
+
+        <div class="button-container hidden" id="response-buttons">
+            <button class="response-btn" id="1Button">1</button>
+            <button class="response-btn" id="3Button">3</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // -------------------------
+        // 参数与全局变量
+        // -------------------------
+        var current_step = 51;
+        var max_trials = 20;
+        var num_steps = 100;
+        var target_reversals = 5;
+        var num_reversals = 0;
+        var current_trial = 0;
+        var num_correct = 0;
+        var timeoutID;
+        var last_correct = -1;
+        var step_sizes = [10,5,2,1,1,1];
+        var is_correct;
+        var correct_answer;
+        var audio_array = [];
+        var audio_files = [];
+        var reversals = 0;
+        var startTime;
+        var stim_order = [];
+        var audioElements = {};
+        var preloaded = false;
+        var totalAudioFiles = 0;
+        var loadedAudioFiles = 0;
+
+        // QUEST 相关对象
+        var quest = null;
+        var questParams = {
+            tGuess: current_step,
+            tGuessSD: 15.0,
+            pThreshold: 0.75,
+            beta: 3.5,
+            delta: 0.01,
+            gamma: 0.5
+        };
+
+        // 实验数据收集
+        var experimentData = {
+            trialData: [],
+            threshold: null,
+            completionTime: null,
+            reversals: 0
+        };
+
+        // 初始化音频文件名列表
+        for (var i=1;i<=num_steps;i++){
+            var stim_sound = "formant/" + i.toString() + ".flac";
+            audio_files.push(stim_sound);
+        }
+        audio_files.push("formant/1.flac");
+        totalAudioFiles = audio_files.length;
+
+        // 初始化试验刺激顺序
+        for (var i=0;i<Math.floor(max_trials/2); i++){ stim_order.push(0); }
+        for (var i=Math.floor(max_trials/2); i<max_trials; i++){ stim_order.push(1); }
+        stim_order = shuffle(stim_order);
+
+        // -------------------------
+        // 预加载音频
+        // -------------------------
+        function preloadAudioFiles(){
+            $('#preload-section').removeClass('hidden');
+            $('#startButton').prop('disabled', true);
+
+            for (var i=1;i<=num_steps;i++){
+                var audioId = "track" + i.toString();
+                var stim_sound = "formant/" + i.toString() + ".flac";
+                var audio = new Audio();
+                audio.id = audioId;
+                audio.src = stim_sound;
+                audio.preload = "auto";
+                audioElements[audioId] = audio;
+
+                (function(a){
+                    a.addEventListener('canplaythrough', function(){ loadedAudioFiles++; updatePreloadProgress(); }, false);
+                    a.addEventListener('error', function(){ loadedAudioFiles++; updatePreloadProgress(); }, false);
+                    a.load();
+                })(audio);
+            }
+
+            var audioId = "track1b";
+            var stim_sound = "formant/1.flac";
+            var audio = new Audio();
+            audio.id = audioId;
+            audio.src = stim_sound;
+            audio.preload = "auto";
+            audioElements[audioId] = audio;
+            audio.addEventListener('canplaythrough', function(){ loadedAudioFiles++; updatePreloadProgress(); }, false);
+            audio.addEventListener('error', function(){ loadedAudioFiles++; updatePreloadProgress(); }, false);
+            audio.load();
+        }
+
+        function updatePreloadProgress(){
+            var progress = (loadedAudioFiles / totalAudioFiles) * 100;
+            $('#preload-progress-bar').css('width', progress + '%');
+            $('#preload-status').text(Math.round(progress) + '% (' + loadedAudioFiles + '/' + totalAudioFiles + ')');
+
+            if (loadedAudioFiles >= totalAudioFiles){
+                preloaded = true;
+                $('#preload-section').addClass('hidden');
+                $('#startButton').prop('disabled', false).text('开始测试');
+            }
+        }
+
+        function getAudioElement(id){ return audioElements[id]; }
+
+        // -------------------------
+        // 与主页面的通信函数
+        // -------------------------
+        function sendDataToParent() {
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: "expData",
+                    expName: "exp2",
+                    data: experimentData
+                }, "*");
+            }
+            // 在独立打开时也能看到结果
+            console.log("实验2数据:", experimentData);
+        }
+
+        // -------------------------
+        // 页面就绪与事件绑定
+        // -------------------------
+        $(document).ready(function(){
+            $('#restartButton').hide();
+            $('#questions').show();
+            $('#instructions').hide();
+            $('#trial').hide();
+            $('#thanks').hide();
+            $('#response-buttons').hide();
+            $('#startButton').click(init);
+            $('#restartButton').click(start);
+            $('#1Button').click(one);
+            $('#3Button').click(three);
+            $('#total-trials').text(max_trials);
+            preloadAudioFiles();
+        });
+
+        // -------------------------
+        // 初始化
+        // -------------------------
+        function init(){
+            if (!preloaded){ alert("音频文件仍在加载中。请稍候..."); return; }
+
+            startTime = new Date();
+            $('#startButton').hide();
+            $('#questions').hide();
+            $('#instructions').show();
+            $('#restartButton').show();
+
+            // 初始化 QUEST
+            try {
+                if (typeof jsQUEST !== "undefined"){
+                    quest = new jsQUEST(questParams);
+                } else if (typeof QUEST !== "undefined"){
+                    quest = new QUEST(questParams);
+                } else if (typeof jsQuest !== "undefined"){
+                    quest = new jsQuest(questParams);
+                } else {
+                    quest = null;
+                }
+            } catch (e){
+                console.warn("创建 jsQUEST 对象时发生错误：", e);
+                quest = null;
+            }
+
+            let quest = jsQUEST.QuestCreate(tGuess, tGuessSd, pThreshold, beta, delta, gamma);
+
+            if (!quest){
+                alert("无法创建 QUEST 对象。请确认 jsQUEST.js 已正确加载。");
+                console.error("quest object is null. Please check jsQUEST.js API.");
+            }
+        }
+
+        // -------------------------
+        // 更新进度条显示
+        // -------------------------
+        function updateProgressBar(){
+            var progress = (current_trial / max_trials) * 100;
+            $('#progress-bar').css('width', progress + '%');
+            $('#current-trial').text(current_trial + 1);
+        }
+
+        function animateSoundIndicator(index){
+            $('.sound-indicator').removeClass('active');
+            $('#sound' + index).addClass('active');
+            setTimeout(function(){ $('#sound' + index).removeClass('active'); }, 500);
+        }
+
+        // -------------------------
+        // 保存与显示结果
+        // -------------------------
+        function save_data(){
+            var endTime = new Date();
+            var durationMs = endTime - startTime;
+            var durationSec = (durationMs / 1000).toFixed(2);
+            var durationMin = (durationMs / 1000 / 60).toFixed(1);
+
+            var testString = "";
+            testString += "<h3>结果摘要</h3>";
+
+            // 计算阈值
+            var thresh_str = "";
+            try {
+                if (quest){
+                    if (typeof quest.mean === "function"){
+                        thresh_str = quest.mean();
+                    } else if (typeof quest.quantile === "function"){
+                        try { thresh_str = quest.quantile(0.5); } catch(e){
+                            thresh_str = quest.quantile();
+                        }
+                    } else if (typeof quest.meanThresh !== "undefined"){
+                        thresh_str = quest.meanThresh;
+                    } else if (quest && quest.posterior){
+                        try {
+                            var p = quest.posterior;
+                            var maxidx = 0;
+                            for (var i=1;i<p.length;i++){
+                                if (p[i] > p[maxidx]){ maxidx = i; }
+                            }
+                            thresh_str = maxidx;
+                        } catch (e){}
+                    }
+                }
+            } catch (e){
+                console.warn("读取 quest 阈值时报错：", e);
+            }
+
+            if (thresh_str === "" || thresh_str === undefined || isNaN(thresh_str)){
+                thresh_str = current_step;
+            }
+
+            // 保存到实验数据
+            experimentData.threshold = Number(thresh_str).toFixed(2);
+            experimentData.completionTime = durationMin;
+            experimentData.reversals = num_reversals;
+
+            testString += "音高辨别阈值（步进单位）：" + experimentData.threshold;
+            testString += "<br>完成的试次总数：" + current_trial;
+            testString += "<br>反转次数：" + num_reversals;
+            testString += "<br>测试时长：" + durationMin + " 分钟";
+
+            $('#results').html(testString);
+            $('#restartButton').hide();
+            $('#instructions').hide();
+            $('#trial').hide();
+            $('#thanks').show();
+
+            // 发送数据到主页面
+            sendDataToParent();
+        }
+
+        // -------------------------
+        // 主要流程 start()
+        // -------------------------
+        function start(){
+            $('#restartButton').hide();
+            $('#instructions').hide();
+            $('#trial').show();
+            $('#response-buttons').hide();
+
+            // 从 QUEST 得到下一个建议
+            var suggested = null;
+            try {
+                if (quest && typeof quest.quantile === "function"){
+                    suggested = quest.quantile();
+                } else if (quest && typeof quest.next === "function"){
+                    suggested = quest.next();
+                } else if (quest && typeof quest.getNext === "function"){
+                    suggested = quest.getNext();
+                } else {
+                    suggested = null;
+                }
+            } catch (e){
+                console.warn("调用 quest.quantile() 时发生错误：", e);
+                suggested = null;
+            }
+
+            if (suggested !== null && !isNaN(suggested)){
+                var s = Math.round(suggested);
+                if (s < 1) s = 1;
+                if (s > num_steps) s = num_steps;
+                current_step = s;
+            } else {
+                if (current_step < 1) current_step = 1;
+                if (current_step > num_steps) current_step = num_steps;
+            }
+
+            updateProgressBar();
+
+            var x, y, z;
+            if (stim_order[current_trial] == 0){
+                correct_answer = "3";
+                x = getAudioElement('track1');
+                y = getAudioElement('track1b');
+                z = getAudioElement('track' + current_step.toString());
+            } else {
+                correct_answer = "1";
+                x = getAudioElement('track' + current_step.toString());
+                y = getAudioElement('track1');
+                z = getAudioElement('track1b');
+            }
+
+            // 记录试验数据
+            experimentData.trialData.push({
+                trial: current_trial + 1,
+                step: current_step,
+                targetPosition: stim_order[current_trial] == 0 ? "third" : "first",
+                timestamp: new Date().toISOString()
+            });
+
+            x.onended = function(){
+                animateSoundIndicator(1);
+                timeoutID = window.setTimeout(function(){
+                    y.play();
+                    animateSoundIndicator(2);
+                }, 500);
+            };
+            y.onended = function(){
+                timeoutID = window.setTimeout(function(){
+                    z.play();
+                    animateSoundIndicator(3);
+                }, 500);
+            };
+            z.onended = function(){
+                timeoutID = window.setTimeout(function(){
+                    $('#response-buttons').show();
+                }, 500);
+            };
+
+            animateSoundIndicator(1);
+            try { x.play(); } catch (e){ console.warn("音频播放错误: ", e); $('#response-buttons').show(); }
+        }
+
+        // -------------------------
+        // 被试响应函数
+        // -------------------------
+        function one(){
+            $('#response-buttons').hide();
+            var actual_answer = '1';
+            var isCorrect = (actual_answer === correct_answer) ? 1 : 0;
+
+            // 更新试验数据
+            experimentData.trialData[experimentData.trialData.length - 1].response = actual_answer;
+            experimentData.trialData[experimentData.trialData.length - 1].correct = isCorrect;
+
+            try {
+                if (quest && typeof quest.update === "function"){
+                    quest.update(isCorrect, current_step);
+                } else if (quest && typeof quest.addResponse === "function"){
+                    quest.addResponse({x: current_step, y: isCorrect});
+                } else {
+                    console.warn("quest.update() 不可用，请检查 jsQUEST API。");
+                }
+            } catch (e){
+                console.warn("向 quest 更新 response 时出错：", e);
+            }
+
+            actual_answer = '1';
+            handleIterationAfterResponse(isCorrect);
+        }
+
+        function three(){
+            $('#response-buttons').hide();
+            var actual_answer = '3';
+            var isCorrect = (actual_answer === correct_answer) ? 1 : 0;
+
+            // 更新试验数据
+            experimentData.trialData[experimentData.trialData.length - 1].response = actual_answer;
+            experimentData.trialData[experimentData.trialData.length - 1].correct = isCorrect;
+
+            try {
+                if (quest && typeof quest.update === "function"){
+                    quest.update(isCorrect, current_step);
+                } else if (quest && typeof quest.addResponse === "function"){
+                    quest.addResponse({x: current_step, y: isCorrect});
+                } else {
+                    console.warn("quest.update() 不可用，请检查 jsQUEST API。");
+                }
+            } catch (e){
+                console.warn("向 quest 更新 response 时出错：", e);
+            }
+
+            handleIterationAfterResponse(isCorrect);
+        }
+
+        function handleIterationAfterResponse(isCorrect){
+            if (isCorrect == 1) is_correct = 1; else is_correct = 0;
+
+            if (num_reversals == 0) {
+                if (last_correct > -1) {
+                    if (last_correct == 1 && is_correct == 0) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) { reversals += current_step; }
+                    }
+                    if (last_correct == 0 && is_correct == 1) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) { reversals += current_step; }
+                    }
+                }
+                if (is_correct == 1) { current_step -= step_sizes[num_reversals]; }
+                if (is_correct == 0) { current_step += step_sizes[num_reversals]; }
+                last_correct = is_correct;
+            } else {
+                if (last_correct > -1) {
+                    if (last_correct == 1 && is_correct == 0) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) { reversals += current_step; }
+                    }
+                    if (last_correct == 0 && is_correct == 1 && num_correct == 1) {
+                        num_reversals += 1;
+                        if (num_reversals > 1) { reversals += current_step; }
+                    }
+                }
+                if (is_correct == 1 && num_correct == 1) { current_step -= step_sizes[num_reversals]; }
+                if (is_correct == 0) { current_step += step_sizes[num_reversals]; }
+                if (is_correct == 0) { last_correct = is_correct; } else {
+                    if (num_correct == 1) { last_correct = 1; }
+                }
+                if (is_correct == 1) {
+                    num_correct += 1;
+                    if (num_correct == 2) { num_correct = 0; }
+                } else {
+                    num_correct = 0;
+                }
+            }
+
+            if (current_step < 2) current_step = 2;
+            if (current_step > 101) current_step = 101;
+
+            current_trial += 1;
+
+            if (current_trial == max_trials || num_reversals == target_reversals) {
+                save_data();
+            } else {
+                start();
+            }
+        }
+
+        // -------------------------
+        // 辅助函数：shuffle
+        // -------------------------
+        function shuffle(array){
+            var currentIndex = array.length, randomIndex;
+            while (0 !== currentIndex){
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+    </script>
+</body>
+</html>

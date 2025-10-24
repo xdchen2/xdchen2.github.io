@@ -668,7 +668,7 @@
     </div>
 
     <script type="text/javascript">
-        // 变量声明
+        
         var current_step = 51;
         var max_trials = 75;
         var num_steps = 100;
@@ -693,12 +693,12 @@
         var animationIntervals = [];
         var skipFeedback = true;
         
-        // 音频预加载相关变量
+        
         var audioElements = [];
         var loadedCount = 0;
         var totalToLoad = 0;
         
-        // 初始化音频元素
+        
         for (var i = 1; i < num_steps + 1; i++) {
             var stim_sound = "risetime/" + i.toString() + ".flac";
             var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
@@ -710,7 +710,7 @@
         $('body').append(toAppend);
         audioElements.push("track1b");
         
-        // 初始化刺激顺序
+        
         for (var i = 0; i < Math.floor(max_trials/2); i++) {
             stim_order.push(0);
         }
@@ -721,7 +721,7 @@
         
         stim_order = shuffle(stim_order);
         
-        // 键盘事件监听
+        
         document.addEventListener('keydown', function(event) {
             if (!waitingForResponse) return;
             
@@ -741,10 +741,10 @@
             
             var isCorrect = (actual_answer == correct_answer);
             
-            // 停止所有动画
+            
             stopAllAnimations();
             
-            // 直接进入下一个试验，跳过反馈界面
+            
             if (skipFeedback) {
                 if (isCorrect) {
                     updateScore(20);
@@ -753,13 +753,13 @@
                     animateBirdCrash();
                 }
                 
-                // 短暂延迟后直接进入下一个试验
+                
                 setTimeout(function() {
                     resetBirdPosition();
                     iterateAndProgress();
                 }, 800);
             } else {
-                // 原来的反馈逻辑
+                
                 if (isCorrect) {
                     updateScore(20);
                     animateBirdSuccess();
@@ -775,7 +775,7 @@
             }
         }
         
-        // 文档加载完成后的初始化
+        
         $(document).ready(function () {
             $('#restartButton').hide();
             $('#questions').show();
@@ -788,28 +788,28 @@
             $('#continue-btn').click(hideGameOver);
             $('#next-btn').click(hideLevelComplete);
             
-            // 更新试验计数器
+            
             $('#total-trials').text(max_trials);
             
-            // 创建云朵装饰
+            
             createClouds();
             
-            // 开始预加载音频
+            
             preloadAudioFiles();
         });
         
-        // 预加载音频文件
+        
         function preloadAudioFiles() {
             totalToLoad = audioElements.length;
             
-            // 收集所有需要预加载的音频文件
+            
             var audioFiles = [];
             for (var i = 1; i <= num_steps; i++) {
                 audioFiles.push("risetime/" + i.toString() + ".flac");
             }
-            audioFiles.push("risetime/1.flac"); // track1b
+            audioFiles.push("risetime/1.flac"); 
             
-            // 预加载所有音频文件
+            
             loadAudioFiles(audioFiles);
         }
         
@@ -824,7 +824,7 @@
                 
                 xhr.onprogress = function(e) {
                     if (e.lengthComputable) {
-                        // 可以在这里添加更详细的进度计算
+                        
                     }
                 };
                 
@@ -833,12 +833,12 @@
                         loaded++;
                         var percentage = Math.round((loaded / total) * 100);
                         
-                        // 更新进度条
+                        
                         $('#preload-progress-bar').css('width', percentage + '%');
                         $('#preload-status').text(percentage + '%');
                         
                         if (loaded === total) {
-                            // 所有文件加载完成
+                            
                             setTimeout(function() {
                                 $('#preload-screen').fadeOut();
                             }, 500);
@@ -851,7 +851,7 @@
                     loaded++;
                     
                     if (loaded === total) {
-                        // 即使有错误也继续
+                        
                         $('#preload-progress-bar').css('width', '100%');
                         $('#preload-status').text('100%');
                         setTimeout(function() {
@@ -875,7 +875,7 @@
                 cloud.style.top = (20 + Math.random() * 120) + 'px';
                 cloud.style.left = (Math.random() * 700) + 'px';
                 
-                // 添加云朵内部结构
+                
                 const before = document.createElement('div');
                 before.style.cssText = `
                     position: absolute;
@@ -913,21 +913,21 @@
         }
         
         function startAllAnimations() {
-            // 开始云朵动画
+            
             startCloudAnimation();
             
-            // 开始小鸟准备动画
+            
             $('#bird').addClass('preparing');
         }
         
         function stopAllAnimations() {
-            // 停止云朵动画
+            
             stopCloudAnimation();
             
-            // 停止小鸟准备动画
+            
             $('#bird').removeClass('preparing');
             
-            // 清除所有定时器
+            
             animationIntervals.forEach(interval => clearInterval(interval));
             animationIntervals = [];
         }
@@ -936,7 +936,7 @@
             score += points;
             $('#score-display').text('Score: ' + score);
             
-            // 添加分数变化动画
+            
             $('#score-display').css('transform', 'scale(1.3)');
             setTimeout(() => {
                 $('#score-display').css('transform', 'scale(1)');
@@ -954,12 +954,12 @@
         function animateBirdSuccess() {
             $('#bird').removeClass('preparing');
             
-            // 小鸟飞行通过动画
+            
             $('#bird').css('transition', 'all 0.8s ease');
             $('#bird').css('left', '400px');
             $('#bird').css('transform', 'translateY(-50%) rotate(-10deg)');
             
-            // 添加翅膀拍打动画
+            
             $('#bird .wing').css('animation', 'flap 0.2s infinite alternate');
         }
         
@@ -979,7 +979,7 @@
             $('#game-over').fadeOut();
             resetBirdPosition();
             
-            // 继续实验
+            
             setTimeout(function() {
                 iterateAndProgress();
             }, 500);
@@ -993,37 +993,37 @@
             $('#level-complete').fadeOut();
             resetBirdPosition();
             
-            // 继续实验
+            
             setTimeout(function() {
                 iterateAndProgress();
             }, 500);
         }
         
         function createPipes() {
-            // 清除之前的管道
+            
             $('.pipe').remove();
             
             const gameContainer = $('#game-container');
             const containerHeight = gameContainer.height();
-            const gapHeight = 150; // 管道之间的间隙高度
+            const gapHeight = 150; 
             const pipeWidth = 70;
             
-            // 创建多组管道，高度错落有致
+            
             for (let i = 0; i < 3; i++) {
                 const pipeLeft = 250 + (i * 150);
                 
-                // 创建上方管道
+                
                 const pipeTop = $('<div class="pipe pipe-top"></div>');
-                const topPipeHeight = 50 + Math.random() * 150 + (i * 20); // 错落有致的高度
+                const topPipeHeight = 50 + Math.random() * 150 + (i * 20); 
                 
                 pipeTop.css({
                     height: topPipeHeight + 'px',
                     left: pipeLeft + 'px'
                 });
                 
-                // 创建下方管道
+                
                 const pipeBottom = $('<div class="pipe pipe-bottom"></div>');
-                const bottomPipeHeight = containerHeight - topPipeHeight - gapHeight - 30; // 30是地面高度
+                const bottomPipeHeight = containerHeight - topPipeHeight - gapHeight - 30; 
                 
                 pipeBottom.css({
                     height: bottomPipeHeight + 'px',
@@ -1050,7 +1050,7 @@
             $('#restartButton').show();
             $('#ID').prop('disabled', true);
             
-            // 滚动到顶部
+            
             window.scrollTo(0, 0);
         }
         
@@ -1096,7 +1096,7 @@
             $('#trial').hide();
             $('#thanks').show();
             
-            // 滚动到顶部
+            
             window.scrollTo(0, 0);
         }
         
@@ -1110,10 +1110,10 @@
             updateProgressBar();
             resetBirdPosition();
             
-            // 创建管道障碍物
+            
             createPipes();
             
-            // 开始动画
+            
             startAllAnimations();
             
             if (stim_order[current_trial] == 0) {
@@ -1145,19 +1145,19 @@
             
             z.onended = function () {
                 timeoutID = window.setTimeout(function() {
-                    // 显示等待响应提示
+                    
                     $('#waiting-prompt').show();
                     waitingForResponse = true;
                 }, 800);
             }
             
-            // 播放第一个声音
+            
             setTimeout(function() {
                 animateSoundIndicator(1);
                 x.play();
             }, 1000);
             
-            // 滚动到试验区域
+            
             window.scrollTo(0, document.getElementById('trial').offsetTop);
         }
         
@@ -1182,7 +1182,7 @@
                 is_correct = 0;
             }
             
-            // 原有的逻辑处理代码保持不变
+            
             if (num_reversals == 0) {
                 if (last_correct > -1) {
                     if (last_correct == 1 && is_correct == 0) {

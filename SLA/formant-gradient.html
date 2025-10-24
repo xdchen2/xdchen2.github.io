@@ -385,7 +385,7 @@
     </div>
 
     <script type="text/javascript">
-        // 变量声明
+        
         var current_step = 51;
         var max_trials = 75;
         var num_steps = 100;
@@ -409,16 +409,16 @@
         var totalAudioFiles = 0;
         var loadedAudioFiles = 0;
         
-        // 初始化音频元素
+        
         for (var i = 1; i < num_steps + 1; i++) {
             var stim_sound = "formant/" + i.toString() + ".flac";
             audio_files.push(stim_sound);
         }
-        audio_files.push("formant/1.flac"); // 添加额外的音频文件
+        audio_files.push("formant/1.flac"); 
         
         totalAudioFiles = audio_files.length;
         
-        // 初始化刺激顺序
+        
         for (var i = 0; i < Math.floor(max_trials/2); i++) {
             stim_order.push(0);
         }
@@ -429,12 +429,12 @@
         
         stim_order = shuffle(stim_order);
         
-        // 预加载音频文件
+        
         function preloadAudioFiles() {
             $('#preload-section').removeClass('hidden');
             $('#startButton').prop('disabled', true);
             
-            // 创建所有音频元素
+            
             for (var i = 1; i < num_steps + 1; i++) {
                 var audioId = "track" + i.toString();
                 var stim_sound = "formant/" + i.toString() + ".flac";
@@ -455,11 +455,11 @@
                     updatePreloadProgress();
                 }, false);
                 
-                // 触发加载
+                
                 audio.load();
             }
             
-            // 添加额外的音频文件
+            
             var audioId = "track1b";
             var stim_sound = "formant/1.flac";
             var audio = new Audio();
@@ -479,11 +479,11 @@
                 updatePreloadProgress();
             }, false);
             
-            // 触发加载
+            
             audio.load();
         }
         
-        // 更新预加载进度
+        
         function updatePreloadProgress() {
             var progress = (loadedAudioFiles / totalAudioFiles) * 100;
             $('#preload-progress-bar').css('width', progress + '%');
@@ -496,12 +496,12 @@
             }
         }
         
-        // 获取预加载的音频元素
+        
         function getAudioElement(id) {
             return audioElements[id];
         }
         
-        // 文档加载完成后的初始化
+        
         $(document).ready(function () {
             $('#restartButton').hide();
             $('#questions').show();
@@ -514,10 +514,10 @@
             $('#1Button').click(one);
             $('#3Button').click(three);
             
-            // 更新试验计数器
+            
             $('#total-trials').text(max_trials);
             
-            // 开始预加载音频
+            
             preloadAudioFiles();
         });
         
@@ -624,7 +624,7 @@
                 }, 500);
             }
             
-            // 播放第一个声音
+            
             animateSoundIndicator(1);
             x.play();
         }
@@ -670,7 +670,7 @@
                 is_correct = 0;
             }
             
-            // 原有的逻辑处理代码保持不变
+            
             if (num_reversals == 0) {
                 if (last_correct > -1) {
                     if (last_correct == 1 && is_correct == 0) {

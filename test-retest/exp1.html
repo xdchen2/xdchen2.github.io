@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元音辨别实验</title>
+    <script src="https://unpkg.com/jspsych@7.3.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-audio-keyboard-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.1.2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jspsych@7.3.1/css/jspsych.css">
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f5f5f5; }
+        .jspsych-display-element { font-size: 24px; color: #333; }
+        .jspsych-btn {
+            font-size: 22px; padding: 15px 30px; margin: 10px;
+            background-color: #4CAF50; color: white; border: none;
+            border-radius: 5px; cursor: pointer; transition: background-color 0.3s;
+        }
+        .jspsych-btn:hover { background-color: #45a049; }
+        .instruction {
+            text-align: center; max-width: 800px; margin: 0 auto;
+            line-height: 1.6; padding: 20px; background-color: white;
+            border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .feedback { font-size: 26px; font-weight: bold; margin-top: 20px; }
+        .correct { color: #4CAF50; }
+        .incorrect { color: #f44336; }
+        .progress-container {
+            width: 80%; height: 20px; background-color: #e0e0e0;
+            border-radius: 10px; margin: 20px auto;
+        }
+        .progress-bar {
+            height: 100%; background-color: #4CAF50;
+            border-radius: 10px; width: 0%; transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="jspsych-target"></div>
+
+    <script>
+        // ✅ 修改1：实验结束时将数据发送给父页面
+        const jsPsych = initJsPsych({
+            on_finish: function() {
+                const data = jsPsych.data.get().json();
+                window.parent.postMessage({
+                    type: 'expData',
+                    expName: 'VowelDiscrimination',
+                    data: JSON.parse(data)
+                }, '*');
+            }
+        });
+
+        // 实验结构定义保持不变
+        const trial_structure = [
+            { type: "practice", audio: "./vowel/Practice_Sore.mp3", wordA: "shore", wordB: "saw", answer: "saw" },
+            { type: "practice", audio: "./vowel/Practice_Fall.mp3", wordA: "foal", wordB: "far", answer: "foal" },
+            { type: "target", audio: "./vowel/Word_01_Chalk.mp3", wordA: "choke", wordB: "chalk", answer: "chalk" },
+            { type: "target", audio: "./vowel/Word_04_Land.mp3", wordA: "land", wordB: "lend", answer: "land" },
+            { type: "target", audio: "./vowel/Word_07_Heart.mp3", wordA: "hurt", wordB: "heart", answer: "heart" },
+            { type: "target", audio: "./vowel/Word_08_Sour.mp3", wordA: "sour", wordB: "sore", answer: "sour" },
+            { type: "target", audio: "./vowel/Word_09_Cat.mp3", wordA: "cat", wordB: "cut", answer: "cat" },
+            { type: "target", audio: "./vowel/Word_010_Fir.mp3", wordA: "fir", wordB: "far", answer: "fir" },
+            { type: "target", audio: "./vowel/Word_012_Merry.mp3", wordA: "merry", wordB: "marry", answer: "merry" },
+            { type: "target", audio: "./vowel/Word_013_Lip.mp3", wordA: "leap", wordB: "lip", answer: "lip" },
+            { type: "target", audio: "./vowel/Word_017_Shock.mp3", wordA: "shock", wordB: "shuck", answer: "shock" },
+            { type: "target", audio: "./vowel/Word_019_Feet.mp3", wordA: "fit", wordB: "feet", answer: "feet" },
+            { type: "target", audio: "./vowel/Word_021_Boat.mp3", wordA: "boat", wordB: "bought", answer: "boat" },
+            { type: "target", audio: "./vowel/Word_022_Dead.mp3", wordA: "did", wordB: "dead", answer: "dead" },
+            { type: "target", audio: "./vowel/Word_024_Fill.mp3", wordA: "fell", wordB: "fill", answer: "fill" }
+        ];
+
+        let all_trials = [];
+        trial_structure.forEach(trial => {
+            if (trial.type === "practice") {
+                all_trials.push(trial);
+            } else {
+                for (let i = 0; i < 3; i++) all_trials.push({...trial});
+            }
+        });
+
+        all_trials = jsPsych.randomization.shuffle(all_trials);
+
+        const preload = {
+            type: jsPsychPreload,
+            audio: all_trials.map(trial => trial.audio)
+        };
+
+        const welcome_trial = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h1>元音辨别实验</h1>
+                    <p>欢迎参加本次实验！</p>
+                    <p>按空格键开始实验。</p>
+                </div>`,
+            choices: [' ']
+        };
+
+        const practice_instruction = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h2>练习部分</h2>
+                    <p>按空格键开始练习。</p>
+                </div>`,
+            choices: [' ']
+        };
+
+        const main_instruction = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h2>正式实验</h2>
+                    <p>按空格键开始正式实验。</p>
+                </div>`,
+            choices: [' ']
+        };
+
+        let trials = [];
+
+        trial_structure.filter(t => t.type === "practice").forEach(trial => {
+            trials.push({
+                type: jsPsychHtmlButtonResponse,
+                stimulus: `
+                    <div style="text-align:center;">
+                        <p>请听下面的单词：</p>
+                        <audio id="audio" src="${trial.audio}" autoplay></audio>
+                    </div>`,
+                choices: [trial.wordA, trial.wordB],
+                data: { trial_type: "practice", audio: trial.audio, correct_answer: trial.answer },
+                on_finish: function(data) {
+                    data.correct = (data.response === data.correct_answer);
+                    data.feedback = data.correct ? `<div class="feedback correct">正确！</div>`
+                                                : `<div class="feedback incorrect">不正确。正确答案是：${data.correct_answer}</div>`;
+                }
+            });
+            trials.push({
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: function() {
+                    const d = jsPsych.data.get().last(1).values()[0];
+                    return d.feedback + '<p>按空格键继续</p>';
+                },
+                choices: [' ']
+            });
+        });
+
+        all_trials.filter(t => t.type === "target").forEach((trial, index) => {
+            trials.push({
+                type: jsPsychHtmlButtonResponse,
+                stimulus: `
+                    <div style="text-align:center;">
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width:${(index / all_trials.filter(t => t.type==='target').length) * 100}%"></div>
+                        </div>
+                        <p>请听下面的单词：</p>
+                        <audio id="audio" src="${trial.audio}" autoplay></audio>
+                    </div>`,
+                choices: [trial.wordA, trial.wordB],
+                data: { trial_type: "target", audio: trial.audio, correct_answer: trial.answer },
+                on_finish: function(data) {
+                    data.correct = (data.response === data.correct_answer);
+                }
+            });
+        });
+
+        const end_trial = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h1>实验完成！</h1>
+                    <p>感谢您的参与。</p>
+                    <p>按空格键结束实验。</p>
+                </div>`,
+            choices: [' ']
+        };
+
+        const timeline = [
+            preload,
+            welcome_trial,
+            practice_instruction,
+            ...trials.filter(t => t.data && t.data.trial_type === "practice"),
+            main_instruction,
+            ...trials.filter(t => t.data && t.data.trial_type === "target"),
+            end_trial
+        ];
+
+        jsPsych.run(timeline);
+    </script>
+</body>
+</html>

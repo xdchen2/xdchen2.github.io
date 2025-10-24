@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元音辨别实验</title>
+    <script src="https://unpkg.com/jspsych@7.3.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-audio-keyboard-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.1.2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jspsych@7.3.1/css/jspsych.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .jspsych-display-element {
+            font-size: 24px;
+            color: #333;
+        }
+        .jspsych-btn {
+            font-size: 22px;
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .jspsych-btn:hover {
+            background-color: #45a049;
+        }
+        .instruction {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .word-options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        .word-button {
+            font-size: 28px;
+            padding: 20px 40px;
+            margin: 15px;
+            min-width: 200px;
+        }
+        .feedback {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .correct {
+            color: #4CAF50;
+        }
+        .incorrect {
+            color: #f44336;
+        }
+        .progress-container {
+            width: 80%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="jspsych-target"></div>
+
+    <script>
+        // 初始化jsPsych
+        const jsPsych = initJsPsych({
+            on_finish: function() {
+                // 实验结束时显示感谢信息
+                jsPsych.data.displayData('csv');
+            }
+        });
+
+        // 定义实验试次
+        const trial_structure = [
+            // 练习试次
+            { type: "practice", audio: "./vowel/Practice_Sore.mp3", wordA: "shore", wordB: "saw", answer: "saw" },
+            { type: "practice", audio: "./vowel/Practice_Fall.mp3", wordA: "foal", wordB: "far", answer: "foal" },
+            // 目标试次 - 每个目标试次需要重复3次
+            { type: "target", audio: "./vowel/Word_01_Chalk.mp3", wordA: "choke", wordB: "chalk", answer: "chalk" },
+            { type: "target", audio: "./vowel/Word_04_Land.mp3", wordA: "land", wordB: "lend", answer: "land" },
+            { type: "target", audio: "./vowel/Word_07_Heart.mp3", wordA: "hurt", wordB: "heart", answer: "heart" },
+            { type: "target", audio: "./vowel/Word_08_Sour.mp3", wordA: "sour", wordB: "sore", answer: "sour" },
+            { type: "target", audio: "./vowel/Word_09_Cat.mp3", wordA: "cat", wordB: "cut", answer: "cat" },
+            { type: "target", audio: "./vowel/Word_010_Fir.mp3", wordA: "fir", wordB: "far", answer: "fir" },
+            { type: "target", audio: "./vowel/Word_012_Merry.mp3", wordA: "merry", wordB: "marry", answer: "merry" },
+            { type: "target", audio: "./vowel/Word_013_Lip.mp3", wordA: "leap", wordB: "lip", answer: "lip" },
+            { type: "target", audio: "./vowel/Word_017_Shock.mp3", wordA: "shock", wordB: "shuck", answer: "shock" },
+            { type: "target", audio: "./vowel/Word_019_Feet.mp3", wordA: "fit", wordB: "feet", answer: "feet" },
+            { type: "target", audio: "./vowel/Word_021_Boat.mp3", wordA: "boat", wordB: "bought", answer: "boat" },
+            { type: "target", audio: "./vowel/Word_022_Dead.mp3", wordA: "did", wordB: "dead", answer: "dead" },
+            { type: "target", audio: "./vowel/Word_024_Fill.mp3", wordA: "fell", wordB: "fill", answer: "fill" }
+        ];
+
+        // 为目标试次创建3次重复
+        let all_trials = [];
+        trial_structure.forEach(trial => {
+            if (trial.type === "practice") {
+                all_trials.push(trial);
+            } else {
+                // 目标试次重复3次
+                for (let i = 0; i < 3; i++) {
+                    all_trials.push({...trial});
+                }
+            }
+        });
+
+        // 随机化试次顺序
+        all_trials = jsPsych.randomization.shuffle(all_trials);
+
+        // 预加载所有音频文件
+        const preload = {
+            type: jsPsychPreload,
+            audio: all_trials.map(trial => trial.audio)
+        };
+
+        // 欢迎和指导语
+        const welcome_trial = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h1>元音辨别实验</h1>
+                    <p>欢迎参加本次实验！</p>
+                    <p>在实验中，您将听到一个单词的发音，然后需要从屏幕上显示的两个单词中选择您听到的那个。</p>
+                    <p>实验分为两个部分：</p>
+                    <p>1. <strong>练习部分</strong>：包含2个试次，帮助您熟悉实验流程</p>
+                    <p>2. <strong>正式实验</strong>：包含42个试次</p>
+                    <p>请仔细聆听每个单词的发音，然后点击您认为正确的单词。</p>
+                    <p>实验大约需要10-15分钟完成。</p>
+                    <p>按空格键开始实验</p>
+                </div>
+            `,
+            choices: [' ']
+        };
+
+        // 练习部分指导语
+        const practice_instruction = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h2>练习部分</h2>
+                    <p>现在开始练习部分。</p>
+                    <p>您将听到一个单词的发音，然后从两个选项中选择您听到的单词。</p>
+                    <p>选择后，您会得到反馈，告诉您是否正确。</p>
+                    <p>按空格键开始练习</p>
+                </div>
+            `,
+            choices: [' ']
+        };
+
+        // 正式实验指导语
+        const main_instruction = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h2>正式实验</h2>
+                    <p>现在开始正式实验。</p>
+                    <p>流程与练习部分相同，但不再提供反馈。</p>
+                    <p>请仔细聆听每个单词的发音，然后点击您认为正确的单词。</p>
+                    <p>按空格键开始正式实验</p>
+                </div>
+            `,
+            choices: [' ']
+        };
+
+        // 创建试次
+        let trials = [];
+        
+        // 添加练习试次
+        trial_structure.filter(t => t.type === "practice").forEach(trial => {
+            trials.push({
+                type: jsPsychHtmlButtonResponse,
+                stimulus: `
+                    <div style="text-align: center;">
+                        <p>请仔细聆听下面的单词发音：</p>
+                        <audio id="audio" src="${trial.audio}" autoplay></audio>
+                        <p>然后选择您听到的单词：</p>
+                    </div>
+                `,
+                choices: [trial.wordA, trial.wordB],
+                data: {
+                    trial_type: "practice",
+                    audio: trial.audio,
+                    wordA: trial.wordA,
+                    wordB: trial.wordB,
+                    correct_answer: trial.answer
+                },
+                on_finish: function(data) {
+                    // 检查答案是否正确
+                    data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_answer);
+                    
+                    // 添加反馈
+                    if (data.correct) {
+                        data.feedback = `<div class="feedback correct">正确！</div>`;
+                    } else {
+                        data.feedback = `<div class="feedback incorrect">不正确。正确答案是：${data.correct_answer}</div>`;
+                    }
+                },
+                post_trial_gap: 1000
+            });
+            
+            // 添加反馈试次
+            trials.push({
+                type: jsPsychHtmlKeyboardResponse,
+                stimulus: function() {
+                    const previous_data = jsPsych.data.get().last(1).values()[0];
+                    return previous_data.feedback + '<p>按空格键继续</p>';
+                },
+                choices: [' ']
+            });
+        });
+
+        // 添加正式实验试次
+        all_trials.filter(t => t.type === "target").forEach((trial, index) => {
+            trials.push({
+                type: jsPsychHtmlButtonResponse,
+                stimulus: `
+                    <div style="text-align: center;">
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${(index / all_trials.filter(t => t.type === "target").length) * 100}%"></div>
+                        </div>
+                        <p>请仔细聆听下面的单词发音：</p>
+                        <audio id="audio" src="${trial.audio}" autoplay></audio>
+                        <p>然后选择您听到的单词：</p>
+                    </div>
+                `,
+                choices: [trial.wordA, trial.wordB],
+                data: {
+                    trial_type: "target",
+                    audio: trial.audio,
+                    wordA: trial.wordA,
+                    wordB: trial.wordB,
+                    correct_answer: trial.answer
+                },
+                on_finish: function(data) {
+                    // 检查答案是否正确
+                    data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_answer);
+                }
+            });
+        });
+
+        // 结束语
+        const end_trial = {
+            type: jsPsychHtmlKeyboardResponse,
+            stimulus: `
+                <div class="instruction">
+                    <h1>实验完成！</h1>
+                    <p>感谢您参与本次实验。</p>
+                    <p>您的数据已保存。</p>
+                    <p>按空格键查看数据</p>
+                </div>
+            `,
+            choices: [' ']
+        };
+
+        // 创建实验时间线
+        const timeline = [
+            preload,
+            welcome_trial,
+            practice_instruction
+        ];
+        
+        // 添加练习试次
+        trials.filter(t => t.data && t.data.trial_type === "practice").forEach(trial => {
+            timeline.push(trial);
+        });
+        
+        timeline.push(main_instruction);
+        
+        // 添加正式实验试次
+        trials.filter(t => t.data && t.data.trial_type === "target").forEach(trial => {
+            timeline.push(trial);
+        });
+        
+        timeline.push(end_trial);
+
+        // 开始实验
+        jsPsych.run(timeline);
+    </script>
+</body>
+</html>
