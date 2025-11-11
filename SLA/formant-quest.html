@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Pitch Discrimination Test (QUEST)</title>
+    <title>Formant Discrimination Test (QUEST)</title>
     <script src="https://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
 
     <script src="./jsQUEST.js" type="text/javascript"></script>
@@ -80,7 +80,7 @@
 <body>
     <div class="container">
         <header id="instructions">
-            <h1>Pitch Discrimination Test</h1>
+            <h1>Formant Discrimination Test</h1>
             <div class="instructions">
                 <p>Welcome to the auditory discrimination experiment. Please read the instructions carefully:</p>
                 <ol>
@@ -370,7 +370,7 @@
             }
 
             
-            testString += "Pitch discrimination threshold (in step units): " + Number(thresh_str).toFixed(2);
+            testString += "Formant discrimination threshold (in step units): " + Number(thresh_str).toFixed(2);
 
             testString += "<br>Total trials completed: " + current_trial;
             testString += "<br>Number of reversals: " + num_reversals;
