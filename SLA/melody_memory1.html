@@ -239,6 +239,33 @@
             font-weight: bold;
         }
         
+        .loading-container {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .loading-text {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #555;
+        }
+        
+        .loading-details {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        
+        .loading-error {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .retry-button {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        }
+        
         @media (max-width: 600px) {
             .container {
                 border-radius: 10px;
@@ -282,6 +309,23 @@
             </div>
         </header>
         
+        <header id="loading" class="hidden">
+            <h1>Loading Audio Files</h1>
+            <div class="loading-container">
+                <p class="loading-text">Please wait while we load the audio files...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="loadingProgressBar"></div>
+                </div>
+                <p class="loading-details" id="loadingDetails">Preparing audio files...</p>
+                <div class="loading-error hidden" id="loadingError">
+                    <p>Some audio files failed to load. Please check your internet connection and try again.</p>
+                    <div class="button-container">
+                        <button type="button" id="retryButton" class="retry-button">Retry Loading</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
         <header id="instructions1" class="hidden">
             <h1>Instructions</h1>
             <div class="instructions-box">
@@ -298,7 +342,7 @@
             <h1>Volume Check</h1>
             <div class="instructions-box">
                 <p>Click the button below to listen to a sample melody.</p>
-                <p>If the volume is too low or too high, adjust your device’s volume and try again.</p>
+                <p>If the volume is too low or too high, adjust your device's volume and try again.</p>
             </div>
             <div class="button-container">
                 <button type="button" id="playButton">Play Sample Melody</button>
@@ -331,7 +375,7 @@
             <h1>Final Instructions</h1>
             <div class="instructions-box">
                 <p>Important: The <span class="highlight">first note of every melody is always 3</span>.</p>
-                <p>When you’re ready, click the button below to begin the experiment!</p>
+                <p>When you're ready, click the button below to begin the experiment!</p>
             </div>
             <div class="button-container">
                 <button type="button" id="restartButton">Start Experiment</button>
@@ -373,6 +417,12 @@
         var memory_score = 0;
         var subject_ID = "";
         
+        // Audio elements storage
+        var audioElements = {};
+        var totalAudioFiles = 16; // 11 tracks + 5 notes
+        var loadedAudioFiles = 0;
+        var audioLoadErrors = 0;
+        
         // Correct answers
         var correct_answers = [
             ["3", "2", "1", "1", "2", "3", "2"],
@@ -387,22 +437,110 @@
             ["3", "4", "3", "2", "1", "1", "2"]
         ];
         
-        // Create audio elements
-        for (var i = 1; i < 12; i++) {
-            var stim_sound = ("./melody_memory/" + i.toString() + ".flac");
-            var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
-            $('body').append(toAppend);
+        // Create and preload audio elements
+        function createAudioElements() {
+            // Create track audio elements
+            for (var i = 1; i < 12; i++) {
+                var stim_sound = ("./melody_memory/" + i.toString() + ".flac");
+                var audioId = 'track' + i.toString();
+                var audioElement = new Audio();
+                audioElement.id = audioId;
+                audioElement.preload = 'auto';
+                
+                var sourceElement = document.createElement('source');
+                sourceElement.src = stim_sound;
+                sourceElement.type = 'audio/flac';
+                
+                audioElement.appendChild(sourceElement);
+                document.body.appendChild(audioElement);
+                
+                audioElements[audioId] = audioElement;
+            }
+            
+            // Create note audio elements
+            for (var i = 1; i < 6; i++) {
+                var stim_sound = ("./melody_memory/" + "note" + i.toString() + ".flac");
+                var audioId = 'note' + i.toString();
+                var audioElement = new Audio();
+                audioElement.id = audioId;
+                audioElement.preload = 'auto';
+                
+                var sourceElement = document.createElement('source');
+                sourceElement.src = stim_sound;
+                sourceElement.type = 'audio/flac';
+                
+                audioElement.appendChild(sourceElement);
+                document.body.appendChild(audioElement);
+                
+                audioElements[audioId] = audioElement;
+            }
         }
         
-        for (var i = 1; i < 6; i++) {
-            var stim_sound = ("./melody_memory/" + "note" + i.toString() + ".flac");
-            var toAppend = '<audio id="note' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
-            $('body').append(toAppend);
+        // Preload all audio files
+        function preloadAudioFiles() {
+            loadedAudioFiles = 0;
+            audioLoadErrors = 0;
+            
+            // Update loading progress
+            updateLoadingProgress();
+            
+            // Set up event listeners for each audio element
+            for (var id in audioElements) {
+                if (audioElements.hasOwnProperty(id)) {
+                    var audio = audioElements[id];
+                    
+                    audio.addEventListener('canplaythrough', function() {
+                        loadedAudioFiles++;
+                        updateLoadingProgress();
+                        
+                        // Check if all audio files are loaded
+                        if (loadedAudioFiles + audioLoadErrors === totalAudioFiles) {
+                            if (audioLoadErrors === 0) {
+                                // All audio files loaded successfully
+                                $('#loading').hide();
+                                $('#instructions1').show();
+                            } else {
+                                // Some audio files failed to load
+                                $('#loadingError').removeClass('hidden');
+                            }
+                        }
+                    });
+                    
+                    audio.addEventListener('error', function() {
+                        audioLoadErrors++;
+                        updateLoadingProgress();
+                        
+                        // Check if all audio files are loaded (or failed)
+                        if (loadedAudioFiles + audioLoadErrors === totalAudioFiles) {
+                            // Some audio files failed to load
+                            $('#loadingError').removeClass('hidden');
+                        }
+                    });
+                    
+                    // Try to load the audio
+                    audio.load();
+                }
+            }
+        }
+        
+        // Update loading progress bar and text
+        function updateLoadingProgress() {
+            var progress = ((loadedAudioFiles + audioLoadErrors) / totalAudioFiles) * 100;
+            $('#loadingProgressBar').css('width', progress + '%');
+            
+            var detailsText = 'Loaded ' + loadedAudioFiles + ' of ' + totalAudioFiles + ' audio files';
+            if (audioLoadErrors > 0) {
+                detailsText += ' (' + audioLoadErrors + ' failed)';
+            }
+            $('#loadingDetails').text(detailsText);
         }
 
         $(document).ready(function () {
             // Initialize UI state
             updateProgressBar();
+            
+            // Create audio elements
+            createAudioElements();
             
             // Button event handlers
             $('#submitButton').click(init);
@@ -412,6 +550,7 @@
             $('#restartButton').click(start);
             $('#playButton').click(playDemo);
             $('#nextTrialButton').click(nextTrial);
+            $('#retryButton').click(retryLoading);
             
             // Note button handlers
             $('#1Button, #trial1Button').click(one);
@@ -439,7 +578,7 @@
         }
         
         function playDemo() {
-            var x = document.getElementById('track11');
+            var x = audioElements['track11'];
             x.play();
         }
         
@@ -451,8 +590,15 @@
             }
             
             $('#questions').hide();
-            $('#instructions1').show();
-            updateProgressBar();
+            $('#loading').show();
+            
+            // Start preloading audio files
+            preloadAudioFiles();
+        }
+        
+        function retryLoading() {
+            $('#loadingError').addClass('hidden');
+            preloadAudioFiles();
         }
         
         function Continue1() {
@@ -489,7 +635,7 @@
             $('#nextTrialButton').hide();
             
             // Play current trial melody
-            var z = document.getElementById('track' + trial_number.toString());
+            var z = audioElements['track' + trial_number.toString()];
             z.play();
             
             z.onended = function () {
@@ -557,7 +703,7 @@
                 response_array[trial_number-1].push('1');
                 updateCurrentResponse();
             }
-            document.getElementById('note1').play();
+            audioElements['note1'].play();
         }
         
         function two() {
@@ -565,7 +711,7 @@
                 response_array[trial_number-1].push('2');
                 updateCurrentResponse();
             }
-            document.getElementById('note2').play();
+            audioElements['note2'].play();
         }
         
         function three() {
@@ -573,7 +719,7 @@
                 response_array[trial_number-1].push('3');
                 updateCurrentResponse();
             }
-            document.getElementById('note3').play();
+            audioElements['note3'].play();
         }
         
         function four() {
@@ -581,7 +727,7 @@
                 response_array[trial_number-1].push('4');
                 updateCurrentResponse();
             }
-            document.getElementById('note4').play();
+            audioElements['note4'].play();
         }
         
         function five() {
@@ -589,7 +735,7 @@
                 response_array[trial_number-1].push('5');
                 updateCurrentResponse();
             }
-            document.getElementById('note5').play();
+            audioElements['note5'].play();
         }
     </script>
 </body>

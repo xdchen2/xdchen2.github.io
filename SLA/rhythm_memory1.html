@@ -355,6 +355,45 @@
             box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
         }
 
+        /* ===== LOADING SCREEN ===== */
+        .loading-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading-animation {
+            width: 80px;
+            height: 80px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .loading-circle {
+            width: 100%;
+            height: 100%;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .loading-details {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
         /* ===== MOBILE ADAPTATION ===== */
         @media (max-width: 600px) {
             .container {
@@ -432,6 +471,17 @@
             </div>
         </header>
 
+        <header id="loading" class="hidden">
+            <h1>Loading Audio Files</h1>
+            <div class="loading-container">
+                <div class="loading-animation">
+                    <div class="loading-circle"></div>
+                </div>
+                <p class="loading-text" id="loadingText">Preparing audio files...</p>
+                <p class="loading-details" id="loadingDetails">0/11 files loaded</p>
+            </div>
+        </header>
+
         <header id="instructions1" class="hidden">
             <h1>Instructions</h1>
             <div class="instructions-box">
@@ -458,8 +508,8 @@
         <header id="instructions3" class="hidden">
             <h1>Practice Trial</h1>
             <div class="instructions-box">
-                <p>Let’s try a practice rhythm.</p>
-                <p>When you click “Start Practice”, you’ll hear a short rhythm play three times.</p>
+                <p>Let's try a practice rhythm.</p>
+                <p>When you click "Start Practice", you'll hear a short rhythm play three times.</p>
                 <p>Then, press the space bar to replay it. Watch the visual feedback!</p>
             </div>
             <div class="button-container">
@@ -468,7 +518,7 @@
         </header>
 
         <header id="instructions4" class="hidden">
-            <h1>Now It’s Your Turn</h1>
+            <h1>Now It's Your Turn</h1>
             <div class="instructions-box">
                 <p>Press the space bar now to see the visual pulse!</p>
                 <p>Each tap creates a soft blue ripple — just like a drum hit.</p>
@@ -481,9 +531,9 @@
         <header id="instructions5" class="hidden">
             <h1>Ready for the Real Test</h1>
             <div class="instructions-box">
-                <p>You’re all set!</p>
+                <p>You're all set!</p>
                 <p>There are <span class="highlight">10 trials</span> total.</p>
-                <p>Each rhythm will play three times, then you’ll repeat it with the space bar.</p>
+                <p>Each rhythm will play three times, then you'll repeat it with the space bar.</p>
             </div>
             <div class="button-container">
                 <button type="button" id="restartButton">Start Experiment</button>
@@ -523,6 +573,8 @@
         var memory_score = 0;
         var subject_ID = "";
         var t0 = 0;
+        var audioFiles = [];
+        var loadedAudioCount = 0;
 
         var correct_answers = [
             ["1","1","0","0","1","1","1","1","1","0","0","1","1"],
@@ -537,11 +589,49 @@
             ["1","1","1","1","0","1","0","0","1","1","1","0","1"]
         ];
 
-        // Create audio elements
-        for (var i = 1; i < 12; i++) {
-            var stim_sound = ("./rhythm_memory/" + i.toString() + ".flac");
-            var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
-            $('body').append(toAppend);
+        // Audio preloading function
+        function preloadAudioFiles() {
+            const totalFiles = 11;
+            
+            for (var i = 1; i <= totalFiles; i++) {
+                var audio = new Audio();
+                audio.src = "./rhythm_memory/" + i.toString() + ".flac";
+                audio.id = "track" + i.toString();
+                
+                audio.addEventListener('canplaythrough', function() {
+                    loadedAudioCount++;
+                    updateLoadingProgress();
+                    
+                    if (loadedAudioCount === totalFiles) {
+                        // All audio files loaded
+                        setTimeout(function() {
+                            $('#loading').hide();
+                            $('#instructions1').show();
+                        }, 500);
+                    }
+                });
+                
+                audio.addEventListener('error', function(e) {
+                    console.error("Error loading audio file: ", e);
+                    loadedAudioCount++;
+                    updateLoadingProgress();
+                });
+                
+                // Store audio elements for later use
+                audioFiles.push(audio);
+                $('body').append(audio);
+            }
+        }
+
+        function updateLoadingProgress() {
+            const totalFiles = 11;
+            const progress = (loadedAudioCount / totalFiles) * 100;
+            $('#progressBar').css('width', progress + '%');
+            $('#loadingDetails').text(loadedAudioCount + "/" + totalFiles + " files loaded");
+            
+            if (loadedAudioCount === totalFiles) {
+                $('#loadingText').text("Audio files loaded successfully!");
+            }
         }
 
         $(document).ready(function () {
@@ -573,8 +663,8 @@
                 return;
             }
             $('#questions').hide();
-            $('#instructions1').show();
-            updateProgressBar();
+            $('#loading').show();
+            preloadAudioFiles();
         }
 
         function Continue1() {
