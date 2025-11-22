@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melody Memory Experiment</title>
+    <script src="http://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        header {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.8em;
+        }
+        
+        p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 160px;
+        }
+        
+        button:hover {
+            background: linear-gradient(to bottom, #2980b9, #2573a7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .notes-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .note-button {
+            width: 80px;
+            height: 80px;
+            font-size: 1.8em;
+            background: linear-gradient(to bottom, #9b59b6, #8e44ad);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .note-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .note-button:active {
+            transform: scale(0.98);
+        }
+        
+        .input-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        input[type="text"] {
+            padding: 12px 15px;
+            font-size: 1.1em;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            margin-top: 10px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            height: 12px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .instructions-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .highlight {
+            background-color: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 2.5em;
+            text-align: center;
+            color: #2c3e50;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .trial-info {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2em;
+            color: #7f8c8d;
+        }
+        
+        .experiment-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+        
+        .experiment-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .response-feedback {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .current-response {
+            margin: 20px 0;
+            min-height: 30px;
+            text-align: center;
+            font-size: 1.3em;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            button {
+                min-width: 140px;
+                padding: 10px 20px;
+            }
+            
+            .note-button {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <header id="questions">
+            <h1>Welcome to the Melody Memory Experiment</h1>
+            <div class="input-container">
+                <p>Please enter your participant ID to begin:</p>
+                <input type="text" id="ID" placeholder="Enter participant ID">
+            </div>
+            <div class="button-container">
+                <button type="button" id="submitButton">Start Experiment</button>
+            </div>
+        </header>
+        
+        <header id="instructions1" class="hidden">
+            <h1>Instructions</h1>
+            <div class="instructions-box">
+                <p>In this test, you will hear several melodies.</p>
+                <p>Each melody will be played three times.</p>
+                <p>Try to remember them, then repeat them by clicking the buttons below.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue1">Continue</button>
+            </div>
+        </header>
+        
+        <header id="instructions2" class="hidden">
+            <h1>Volume Check</h1>
+            <div class="instructions-box">
+                <p>Click the button below to listen to a sample melody.</p>
+                <p>If the volume is too low or too high, adjust your device’s volume and try again.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="playButton">Play Sample Melody</button>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue2">Continue</button>
+            </div>
+        </header>
+        
+        <header id="instructions3" class="hidden">
+            <h1>How to Respond</h1>
+            <div class="instructions-box">
+                <p>After the melody finishes playing, repeat it by clicking the five buttons below in order.</p>
+                <p>Each button plays a specific tone when clicked.</p>
+                <p>Try clicking them now to become familiar with the pitches!</p>
+            </div>
+            <div class="notes-container">
+                <button class="note-button" id="5Button">5</button>
+                <button class="note-button" id="4Button">4</button>
+                <button class="note-button" id="3Button">3</button>
+                <button class="note-button" id="2Button">2</button>
+                <button class="note-button" id="1Button">1</button>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue3">Continue</button>
+            </div>
+        </header>
+        
+        <header id="instructions4" class="hidden">
+            <h1>Final Instructions</h1>
+            <div class="instructions-box">
+                <p>Important: The <span class="highlight">first note of every melody is always 3</span>.</p>
+                <p>When you’re ready, click the button below to begin the experiment!</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="restartButton">Start Experiment</button>
+            </div>
+        </header>
+        
+        <header id="trial" class="hidden">
+            <h1>Trial <span id="trialNumber">1</span> / 10</h1>
+            <p class="trial-info">Listen carefully to the melody, then repeat it by clicking the number buttons below.</p>
+            <div class="current-response" id="currentResponse"></div>
+            <div class="notes-container">
+                <button class="note-button" id="trial5Button">5</button>
+                <button class="note-button" id="trial4Button">4</button>
+                <button class="note-button" id="trial3Button">3</button>
+                <button class="note-button" id="trial2Button">2</button>
+                <button class="note-button" id="trial1Button">1</button>
+            </div>
+            <div class="button-container">
+                <button type="button" id="nextTrialButton">Next Trial</button>
+            </div>
+        </header>
+        
+        <header id="thanks" class="hidden">
+            <h1>Thank You for Participating!</h1>
+            <p>The experiment is complete. Thank you for your time and effort.</p>
+            <div class="results-container">
+                <h2>Your Results</h2>
+                <div class="score-display" id="finalScore">Calculating...</div>
+                <div id="resultsDetails"></div>
+            </div>
+        </header>
+    </div>
+
+    <script type="text/javascript">
+        // Experiment data storage
+        var response_array = [[],[],[],[],[],[],[],[],[],[]];
+        var trial_number = 1;
+        var during_instructions = 1;
+        var memory_score = 0;
+        var subject_ID = "";
+        
+        // Correct answers
+        var correct_answers = [
+            ["3", "2", "1", "1", "2", "3", "2"],
+            ["3", "4", "3", "4", "5", "4", "3"],
+            ["3", "4", "5", "4", "3", "2", "1"],
+            ["3", "2", "1", "2", "3", "2", "1"],
+            ["3", "4", "5", "5", "5", "5", "4"],
+            ["3", "4", "5", "4", "3", "2", "3"],
+            ["3", "2", "3", "2", "3", "2", "3"],
+            ["3", "2", "3", "4", "3", "2", "1"],
+            ["3", "4", "5", "4", "5", "4", "5"],
+            ["3", "4", "3", "2", "1", "1", "2"]
+        ];
+        
+        // Create audio elements
+        for (var i = 1; i < 12; i++) {
+            var stim_sound = ("./melody_memory/" + i.toString() + ".flac");
+            var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
+            $('body').append(toAppend);
+        }
+        
+        for (var i = 1; i < 6; i++) {
+            var stim_sound = ("./melody_memory/" + "note" + i.toString() + ".flac");
+            var toAppend = '<audio id="note' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
+            $('body').append(toAppend);
+        }
+
+        $(document).ready(function () {
+            // Initialize UI state
+            updateProgressBar();
+            
+            // Button event handlers
+            $('#submitButton').click(init);
+            $('#Continue1').click(Continue1);
+            $('#Continue2').click(Continue2);
+            $('#Continue3').click(Continue3);
+            $('#restartButton').click(start);
+            $('#playButton').click(playDemo);
+            $('#nextTrialButton').click(nextTrial);
+            
+            // Note button handlers
+            $('#1Button, #trial1Button').click(one);
+            $('#2Button, #trial2Button').click(two);
+            $('#3Button, #trial3Button').click(three);
+            $('#4Button, #trial4Button').click(four);
+            $('#5Button, #trial5Button').click(five);
+        });
+        
+        function updateProgressBar() {
+            var progress = 0;
+            if (trial_number > 1) {
+                progress = ((trial_number - 1) / 10) * 100;
+            }
+            $('#progressBar').css('width', progress + '%');
+            $('#trialNumber').text(trial_number);
+        }
+        
+        function updateCurrentResponse() {
+            var currentTrial = trial_number - 1;
+            if (currentTrial >= 0 && currentTrial < response_array.length) {
+                var response = response_array[currentTrial].join(' - ');
+                $('#currentResponse').text('Your response: ' + (response || 'None yet'));
+            }
+        }
+        
+        function playDemo() {
+            var x = document.getElementById('track11');
+            x.play();
+        }
+        
+        function init() {
+            subject_ID = document.getElementById("ID").value;
+            if (!subject_ID) {
+                alert("Please enter your participant ID to continue.");
+                return;
+            }
+            
+            $('#questions').hide();
+            $('#instructions1').show();
+            updateProgressBar();
+        }
+        
+        function Continue1() {
+            $('#instructions1').hide();
+            $('#instructions2').show();
+            updateProgressBar();
+        }
+        
+        function Continue2() {
+            $('#instructions2').hide();
+            $('#instructions3').show();
+            updateProgressBar();
+        }
+        
+        function Continue3() {
+            $('#instructions3').hide();
+            $('#instructions4').show();
+            updateProgressBar();
+        }
+        
+        function start() {
+            during_instructions = 0;
+            $('#instructions4').hide();
+            playTrialMelody();
+        }
+        
+        function playTrialMelody() {
+            $('#trial').show();
+            updateProgressBar();
+            $('#currentResponse').text('Playing melody...');
+            
+            // Disable note buttons
+            $('#trial1Button, #trial2Button, #trial3Button, #trial4Button, #trial5Button').prop('disabled', true);
+            $('#nextTrialButton').hide();
+            
+            // Play current trial melody
+            var z = document.getElementById('track' + trial_number.toString());
+            z.play();
+            
+            z.onended = function () {
+                // Enable note buttons after playback ends
+                $('#trial1Button, #trial2Button, #trial3Button, #trial4Button, #trial5Button').prop('disabled', false);
+                $('#nextTrialButton').show();
+                $('#currentResponse').text('Please repeat the melody:');
+                updateCurrentResponse();
+            };
+        }
+        
+        function nextTrial() {
+            // Disable note buttons and hide Next Trial button
+            $('#trial1Button, #trial2Button, #trial3Button, #trial4Button, #trial5Button').prop('disabled', true);
+            $('#nextTrialButton').hide();
+            
+            if (trial_number >= 10) {
+                save_data();
+            } else {
+                trial_number++;
+                playTrialMelody();
+            }
+        }
+        
+        function save_data() {
+            // Calculate score
+            memory_score = 0;
+            
+            for (var i = 0; i < 10; i++) {
+                var current_vector = response_array[i];
+                var current_correct = correct_answers[i];
+                
+                // Ensure response array has exactly 7 elements
+                while (current_vector.length < 7) {
+                    current_vector.push('0');
+                }
+                
+                current_vector = current_vector.slice(0, 7);
+                
+                // Compare responses with correct answers
+                for (var j = 0; j < 7; j++) {
+                    if (current_vector[j] === current_correct[j]) {
+                        memory_score += 1;
+                    }
+                }
+            }
+            
+            // Convert to percentage
+            var percentage_score = (memory_score / 70) * 100;
+            
+            // Display results
+            $('#trial').hide();
+            $('#thanks').show();
+            $('#finalScore').text(percentage_score.toFixed(1) + '%');
+            
+            // Add detailed results
+            var resultsHTML = '<p>You correctly identified ' + memory_score + ' out of 70 notes.</p>';
+            $('#resultsDetails').html(resultsHTML);
+            
+            updateProgressBar();
+        }
+        
+        function one() {
+            if (during_instructions < 1) {
+                response_array[trial_number-1].push('1');
+                updateCurrentResponse();
+            }
+            document.getElementById('note1').play();
+        }
+        
+        function two() {
+            if (during_instructions < 1) {
+                response_array[trial_number-1].push('2');
+                updateCurrentResponse();
+            }
+            document.getElementById('note2').play();
+        }
+        
+        function three() {
+            if (during_instructions < 1) {
+                response_array[trial_number-1].push('3');
+                updateCurrentResponse();
+            }
+            document.getElementById('note3').play();
+        }
+        
+        function four() {
+            if (during_instructions < 1) {
+                response_array[trial_number-1].push('4');
+                updateCurrentResponse();
+            }
+            document.getElementById('note4').play();
+        }
+        
+        function five() {
+            if (during_instructions < 1) {
+                response_array[trial_number-1].push('5');
+                updateCurrentResponse();
+            }
+            document.getElementById('note5').play();
+        }
+    </script>
+</body>
+</html>

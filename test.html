@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xuanda Chen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #ffffff;
+            --text-color: #1f2937;
+            --light-bg: #f9fafb;
+            --card-background: #ffffff;
+            --border-color: #e5e7eb;
+            --nav-height: 60px;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --section-gap: 2.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 导航栏样式 */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .nav-logo {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 语言切换按钮 */
+        .lang-switch {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .lang-switch:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 主容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: calc(var(--nav-height) + 2rem) auto;
+            padding: 0 2rem;
+        }
+
+        .profile-card {
+            background-color: var(--card-background);
+            border-radius: 1rem;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--section-gap);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-section {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            background: var(--light-bg);
+            border-radius: 1rem;
+        }
+
+        .profile-image-container {
+            flex-shrink: 0;
+        }
+
+        .profile-image {
+            width: 250px;
+            height: 330px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profile-info h1 {
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .profile-info h2 {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .profile-info p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .contact-info i {
+            color: #ef4444;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .contact-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        /* 区块标题样式 */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: var(--section-gap) 0 var(--spacing-md) 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .section-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        /* 新闻动态样式 */
+        .news-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 研究内容样式 */
+        .research-content {
+            padding: 1rem 0;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* 出版物样式 - 年份分组，APA格式，紧凑显示 */
+        .publication-year {
+            margin: 2rem 0 1rem 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2563eb;
+            /* border-left: 4px solid var(--primary-color); */
+            /* padding-left: 1rem; */
+            letter-spacing: -0.5px;
+        }
+
+        .publication-item {
+            margin: 0.75rem 0;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .publication-item:last-child {
+            border-bottom: none;
+        }
+
+        .publication-item strong {
+            font-weight: 600;
+        }
+
+        .publication-links {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+            margin-left: 0.5rem;
+        }
+
+        .pub-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-link {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .doi-link {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .pub-link:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* 演示文稿样式 */
+        .presentation-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .presentation-item:last-child {
+            border-bottom: none;
+        }
+
+        .presentation-item i {
+            font-style: italic;
+        }
+
+        .copyright {
+            padding: 1rem 0;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-bar {
+                padding: 0 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .top-section {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+
+            .profile-image {
+                width: 100%;
+                height: 300px;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .profile-info h1 {
+                font-size: 1.75rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.1rem;
+            }
+
+            .publication-year {
+                font-size: 1.2rem;
+                padding-left: 0.75rem;
+            }
+
+            .publication-links {
+                flex-wrap: wrap;
+            }
+
+            .pub-link {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="nav-bar">
+        <a href="#top" class="nav-logo">Xuanda Chen</a>
+        <ul class="nav-links">
+            <li><a href="#about">Home</a></li>
+            <li><a href="#news">News</a></li>
+            <li><a href="#research">Research</a></li>
+            <li><a href="#publications">Publications</a></li>
+            <li><a href="#presentation">Presentations</a></li>
+        </ul>
+        <div class="lang-switch" id="langToggle">
+            <span class="lang-text">EN</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="top-section" id="about">
+                <div class="profile-image-container">
+                    <img src="./avatar.jpg" alt="avatar" class="profile-image">
+                </div>
+                <div class="profile-info">
+                    <h1>Xuanda Chen [ɕᶣɛn˨ta˨ ʈʂʰən˨]</h1>
+                    <h2>PhD student in linguistics</h2>
+                    <p>Hello! I am a fifth-year PhD candidate in Linguistics at McGill University. I'm also affiliated with the <a href="https://crblm.ca">Centre for Brain, Language, and Music</a>, and was a member of <a href="https://mila.quebec/en/">Mila - Quebec AI Institute</a>.</p>
+                    <div class="contact-info">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:xuanda.chen@mail.mcgill.ca">xuanda.chen@mail.mcgill.ca</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="section" id="news">
+                    <div class="section-header">
+                        <i class="fas fa-bullhorn"></i>
+                        <h3>News</h3>
+                    </div>
+                    <div class="news-item">
+                        <p>I am currently on the job market and seeking postdoctoral opportunities!</p>
+                    </div>
+                    <div class="news-item">
+                        <p>2024 Nov. - Presented at BUCLD in Boston</p>
+                    </div>
+                    <div class="news-item">
+                        <p>2024 Aug. - Awarded Paula Menyuk Award</p>
+                    </div>
+                    <div class="news-item">
+                        <p>2023 Nov. - Awarded Schull Yang International Experience Award</p>
+                    </div>
+                    <div class="news-item">
+                        <p>2023 May. - Awarded IPA Student Award, International Phonetic Association</p>
+                    </div>
+                    <div class="news-item">
+                        <p>2023 Apr. - Awarded CRBLM graduate student stipend</p>
+                    </div>
+                </div>
+
+                <div class="section" id="research">
+                    <div class="section-header">
+                        <i class="fas fa-flask"></i>
+                        <h3>Research</h3>
+                    </div>
+                    <div class="research-content">
+                        <p>Language is fundamental to human cognition. My research investigates how the human brain and computational models represent linguistic knowledge, addressing two core questions: (i) how acoustic signals are transformed into abstract representations, and (ii) how these representations support language understanding. Combining behavioral experiments, neuroimaging, and computational modeling, I study cross-linguistic speech perception, neural encoding of phonological features, and computational approaches to language acquisition. My goal is to bridge human cognition and AI, uncovering universal principles of language representation.</p>
+                    </div>
+                </div>
+
+                <div class="section" id="publications">
+                    <div class="section-header">
+                        <i class="fas fa-book"></i>
+                        <h3>Publications</h3>
+                    </div>
+
+                    <!-- 2025 -->
+                    <div class="publication-year">2025</div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Reddy, S., & O'Donnell, T. (2024). When word order matters: Unraveling redundancy and sequence sensitivity in language models through information theory. <em>ARR rolling review</em>. <a href="./order.pdf" class="pub-link pdf-link"> pdf</a> <a href="./order.pdf" class="pub-link doi-link"></i> link</a>
+                    </div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Reddy, S., & O'Donnell, T. (2024). When word order matters: Unraveling redundancy and sequence sensitivity in language models through information theory. <em>ARR rolling review</em>. <a href="./order.pdf" class="pub-link pdf-link"> pdf</a> <a href="./order.pdf" class="pub-link doi-link"></i> link</a>
+                    </div>
+
+                    <!-- 2024 -->
+                    <div class="publication-year">2024</div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Reddy, S., & O'Donnell, T. (2024). When word order matters: Unraveling redundancy and sequence sensitivity in language models through information theory. <em>ARR rolling review</em>. <a href="./order.pdf" class="pub-link pdf-link"> pdf</a> <a href="./order.pdf" class="pub-link doi-link"></i> link</a>
+                    </div>
+
+                    <!-- 2023 -->
+                    <div class="publication-year">2023</div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, & Portelance, E. (2023). Grammar induction pretraining for language modeling in low resource contexts. <em>Proceedings of the BabyLM Challenge at the 27th Conference on Computational Natural Language Learning</em>. <a href="https://aclanthology.org/2023.conll-babylm.5.pdf" class="pub-link pdf-link"> pdf</a> <a href="https://aclanthology.org/2023.conll-babylm.5.pdf" class="pub-link doi-link"></i> link</a>
+                    </div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Clayards, M., Goad, H., & Kim, D. (2023). L1 effects on naive perception and production of [Ʉ] by Mandarin and Italian speakers. <em>Proceedings of The International Congress of Phonetic Sciences</em>. <a href="https://speechlearning.lab.mcgill.ca/pdfs/ChenClayardsGoadKim(ICPhS2023).pdf" class="pub-link pdf-link"> pdf</a> <a href="https://speechlearning.lab.mcgill.ca/pdfs/ChenClayardsGoadKim(ICPhS2023).pdf" class="pub-link doi-link"></i> link</a>
+                    </div>
+
+                    <!-- 2021 -->
+                    <div class="publication-year">2021</div>
+                    <div class="publication-item">
+                        Liu, M., Wang, L., Lee, K. A., <strong>Chen, X.</strong>, & Dang, J. (2021). Replay-attack detection using features with adaptive spectro-temporal resolution. <em>International Conference on Acoustics, Speech and Signal Processing</em>. <a href="https://ieeexplore.ieee.org/document/9414250" class="pub-link pdf-link"> pdf</a> <a href="https://ieeexplore.ieee.org/document/9414250" class="pub-link doi-link"></i> link</a>
+                    </div>
+
+                    <!-- 2018 -->
+                    <div class="publication-year">2018</div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Jia, Y., & Xiong, Z. (2018). Measuring prosodic transfer in vector space by weighted tonal events. <em>International Symposium on Chinese Spoken Language Processing</em>. <a href="https://ieeexplore.ieee.org/document/8706644" class="pub-link pdf-link"> pdf</a> <a href="https://ieeexplore.ieee.org/document/8706644" class="pub-link doi-link"></i> link</a>
+                    </div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Xiong, Z., & Hu, J. (2018). The trajectory of voice onset time with vocal aging. <em>Proceedings of Interspeech</em>. <a href="https://arxiv.org/pdf/1810.07030.pdf" class="pub-link pdf-link"> pdf</a> <a href="https://arxiv.org/pdf/1810.07030.pdf" class="pub-link doi-link"></i> link</a>
+                    </div>
+
+                    <!-- Submitted -->
+                    <div class="publication-year">SUBMITTED</div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Goad, H., Clayards, M., Shanks, D., & Kim, D. (submitted). Phonological effects on perceptual distinctiveness: Evidence from high vowel discrimination by Mandarin and Italian speakers.
+                    </div>
+                    <div class="publication-item">
+                        <strong>Chen, X.</strong>, Zeng, L., & Li, Y. (submitted). Effect of auditory precision on L2 speech learning is partially mediated by learning target and instruction form.
+                    </div>
+                </div>
+
+                <div class="section" id="presentation">
+                    <div class="section-header">
+                        <i class="fas fa-presentation-screen"></i>
+                        <h3>Presentations</h3>
+                    </div>
+                    <div class="presentation-item">
+                        <p>2024. Chen, X., Goad, H., Clayards, M. Feature Fission as a Mechanism of Redeployment Beyond Fusion: High Vowel Perception in L2. <i>The 49th Annual Boston University Conference on Language Development</i>.</p>
+                    </div>
+                    <div class="presentation-item">
+                        <p>2023. Chen, X., Clayards, M., Goad, H., & Kim, D. The Discrimination and Imitation Of [Ʉ] By Mandarin and Italian Speakers. <i>The Montreal-Ottawa-Toronto-Hamilton Phonology/Phonetics Workshop</i>.</p>
+                    </div>
+                    <div class="presentation-item">
+                        <p>2022. Chen, X., Reddy, S., O'Donnell, T. When Does Word Order Matter and When It Doesn't? <i>MILA-NLP</i>.</p>
+                    </div>
+                    <div class="presentation-item">
+                        <p>2016. Chen, X., Wu, Q., & Hu, J. The Dialect Effect on English Stop Acquisition Between Mandarin and Wu Children. <i>The Phonetic Conference of China</i>. <strong>[Best Student Paper]</strong></p>
+                    </div>
+                </div>
+
+                <div class="section" id="contact">
+                    <div class="section-header">
+                        <i class="fas fa-address-book"></i>
+                        <h3>Contact</h3>
+                    </div>
+                    <div class="news-item">
+                        <p class="copyright">&copy; Xuanda Chen. This website was updated in Nov, 2024.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 语言切换功能
+        document.getElementById('langToggle').addEventListener('click', function() {
+            const langText = this.querySelector('.lang-text');
+            if (langText.textContent === 'EN') {
+                langText.textContent = '中文';
+                document.documentElement.lang = 'zh-CN';
+            } else {
+                langText.textContent = 'EN';
+                document.documentElement.lang = 'en-US';
+            }
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 导航栏阴影效果
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('.nav-bar');
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+

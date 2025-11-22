@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Memory Experiment</title>
+    <script src="http://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        header {
+            padding: 35px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.9em;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 1.15em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+            min-width: 160px;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        button:hover {
+            background: linear-gradient(to bottom, #2980b9, #2573a7);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+            border-color: rgba(52, 152, 219, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+        }
+
+        .input-container {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        input[type="text"] {
+            padding: 14px 18px;
+            font-size: 1.1em;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 260px;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 12px;
+            margin: 25px 0;
+            overflow: hidden;
+            height: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.6s ease;
+            border-radius: 12px;
+        }
+
+        .instructions-box {
+            background-color: #f8f9ff;
+            border-left: 5px solid #3498db;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 0 10px 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instructions-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(52, 152, 219, 0.05), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .highlight {
+            background-color: #fff9c4;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #8d6e63;
+        }
+
+        .results-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 35px;
+            margin-top: 25px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        .score-display {
+            font-size: 3em;
+            text-align: center;
+            color: #2c3e50;
+            margin: 25px 0;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            letter-spacing: -1px;
+        }
+
+        .trial-info {
+            text-align: center;
+            margin: 18px 0;
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .current-response {
+            margin: 25px 0;
+            min-height: 40px;
+            text-align: center;
+            font-size: 1.4em;
+            color: #3498db;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f0f8ff;
+            border: 1px dashed #bdc3c7;
+        }
+
+        /* ===== RHYTHM VISUALIZER ===== */
+        .rhythm-visualizer {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 30px auto;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .drum-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52, 152, 219, 0.3), transparent 70%);
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+            animation: pulse 0.8s ease-out forwards;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1.6); }
+        }
+
+        .drum-icon {
+            font-size: 4em;
+            color: #3498db;
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+
+        .drum-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .drum-icon:active {
+            transform: scale(0.95);
+        }
+
+        /* ===== HANDS ===== */
+        .hand {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: transparent;
+            border-radius: 0;
+            z-index: 10;
+            transition: all 0.1s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: #333;
+            box-shadow: none;
+            /* box-shadow: 0 4px 8px rgba(0,0,0,0.2); */
+        }
+
+        .hand.left {
+            left: 15%;
+            top: 25%;
+        }
+
+        .hand.right {
+            left: 50%;
+            top: 25%;
+        }
+
+        .hand.hit {
+            animation: handHit 0.2s ease;
+            /* background: #FFA500; */
+        }
+
+        @keyframes handHit {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(10px) scale(0.9); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        .hand.hit.left {
+            animation: handHitLeft 0.2s ease;
+        }
+
+        .hand.hit.right {
+            animation: handHitRight 0.2s ease;
+        }
+
+        @keyframes handHitLeft {
+            0% { transform: translateX(0) scale(1); }
+            50% { transform: translateX(10px) translateY(10px) scale(0.9); }
+            100% { transform: translateX(0) scale(1); }
+        }
+
+        @keyframes handHitRight {
+            0% { transform: translateX(0) scale(1); }
+            50% { transform: translateX(-10px) translateY(10px) scale(0.9); }
+            100% { transform: translateX(0) scale(1); }
+        }
+
+        /* ===== RHYTHM RESPONSE INDICATOR ===== */
+        .rhythm-grid {
+            display: none; /* Hide rhythm dots */
+            justify-content: center;
+            gap: 8px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            max-width: 500px;
+        }
+
+        .rhythm-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .rhythm-dot.active {
+            background-color: #3498db;
+            transform: scale(1.8);
+            opacity: 1;
+        }
+
+        .rhythm-dot.correct {
+            background-color: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+
+        .rhythm-dot.incorrect {
+            background-color: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+        }
+
+        /* ===== MOBILE ADAPTATION ===== */
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 14px;
+                margin: 15px 0;
+            }
+
+            header {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            button {
+                min-width: 140px;
+                padding: 12px 24px;
+                font-size: 1em;
+            }
+
+            .input-container input {
+                width: 200px;
+                font-size: 1em;
+            }
+
+            .rhythm-visualizer {
+                width: 140px;
+                height: 140px;
+            }
+
+            .drum-icon {
+                font-size: 3em;
+            }
+
+            .hand {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2em;
+            }
+
+            .hand.left {
+                left: 35%;
+            }
+
+            .hand.right {
+                left: 65%;
+            }
+
+            .rhythm-dot {
+                width: 14px;
+                height: 14px;
+            }
+
+            .score-display {
+                font-size: 2.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <header id="questions">
+            <h1>Welcome to the Rhythm Memory Experiment</h1>
+            <div class="input-container">
+                <p>Please enter your participant ID to begin:</p>
+                <input type="text" id="ID" placeholder="Enter participant ID">
+            </div>
+            <div class="button-container">
+                <button type="button" id="submitButton">Start Experiment</button>
+            </div>
+        </header>
+
+        <header id="instructions1" class="hidden">
+            <h1>Instructions</h1>
+            <div class="instructions-box">
+                <p>This is a test of your ability to remember rhythms.</p>
+                <p>During each trial, you will hear a rhythm repeated three times.</p>
+                <p>Once it stops, <span class="highlight">press the space bar</span> to repeat it.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue1">Continue</button>
+            </div>
+        </header>
+
+        <header id="instructions2" class="hidden">
+            <h1>Important</h1>
+            <div class="instructions-box">
+                <p>Only press the <span class="highlight">space bar</span>.</p>
+                <p>Other keys will not register. If you press the wrong key, wait for the next trial.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue2">Continue</button>
+            </div>
+        </header>
+
+        <header id="instructions3" class="hidden">
+            <h1>Practice Trial</h1>
+            <div class="instructions-box">
+                <p>Let’s try a practice rhythm.</p>
+                <p>When you click “Start Practice”, you’ll hear a short rhythm play three times.</p>
+                <p>Then, press the space bar to replay it. Watch the visual feedback!</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue3">Start Practice</button>
+            </div>
+        </header>
+
+        <header id="instructions4" class="hidden">
+            <h1>Now It’s Your Turn</h1>
+            <div class="instructions-box">
+                <p>Press the space bar now to see the visual pulse!</p>
+                <p>Each tap creates a soft blue ripple — just like a drum hit.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue4">Continue</button>
+            </div>
+        </header>
+
+        <header id="instructions5" class="hidden">
+            <h1>Ready for the Real Test</h1>
+            <div class="instructions-box">
+                <p>You’re all set!</p>
+                <p>There are <span class="highlight">10 trials</span> total.</p>
+                <p>Each rhythm will play three times, then you’ll repeat it with the space bar.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="restartButton">Start Experiment</button>
+            </div>
+        </header>
+
+        <header id="trial" class="hidden">
+            <h1>Listen. Then Repeat.</h1>
+            <p class="trial-info">Press the space bar to replay the rhythm</p>
+            <div class="rhythm-visualizer">
+                <div class="hand left">👋</div>
+                <div class="hand right">👋</div>
+                <div class="drum-icon">🪘</div>
+            </div>
+            <div class="current-response" id="currentResponse">Listening...</div>
+            <div class="rhythm-grid" id="rhythmGrid"></div>
+            <div class="button-container">
+                <button type="button" id="nextTrialButton" class="hidden">Next Trial</button>
+            </div>
+        </header>
+
+        <header id="thanks" class="hidden">
+            <h1>Thank You for Participating!</h1>
+            <p>The experiment is complete. Your responses have been recorded.</p>
+            <div class="results-container">
+                <h2>Your Results</h2>
+                <div class="score-display" id="finalScore">Calculating...</div>
+                <div id="resultsDetails"></div>
+            </div>
+        </header>
+    </div>
+
+    <script type="text/javascript">
+        var response_array = [[],[],[],[],[],[],[],[],[],[]];
+        var trial_number = 1;
+        var during_instructions = 1;
+        var memory_score = 0;
+        var subject_ID = "";
+        var t0 = 0;
+
+        var correct_answers = [
+            ["1","1","0","0","1","1","1","1","1","0","0","1","1"],
+            ["1","1","0","1","1","1","1","0","1","0","0","1","1"],
+            ["1","1","0","1","1","0","1","1","1","1","0","0","1"],
+            ["1","0","1","0","1","1","1","1","1","0","0","1","1"],
+            ["1","0","1","1","1","0","1","1","1","0","0","1","1"],
+            ["1","1","1","0","0","1","1","0","1","1","1","0","1"],
+            ["1","1","0","1","1","1","1","0","0","1","1","0","1"],
+            ["1","1","1","1","0","0","1","1","0","1","1","0","1"],
+            ["1","1","0","1","0","0","1","1","1","0","1","1","1"],
+            ["1","1","1","1","0","1","0","0","1","1","1","0","1"]
+        ];
+
+        // Create audio elements
+        for (var i = 1; i < 12; i++) {
+            var stim_sound = ("./rhythm_memory/" + i.toString() + ".flac");
+            var toAppend = '<audio id="track' + i.toString() + '"><source src="' + stim_sound + '" /></audio>';
+            $('body').append(toAppend);
+        }
+
+        $(document).ready(function () {
+            updateProgressBar();
+            $('#submitButton').click(init);
+            $('#Continue1').click(Continue1);
+            $('#Continue2').click(Continue2);
+            $('#Continue3').click(Continue3);
+            $('#Continue4').click(Continue4);
+            $('#restartButton').click(start);
+            $('#nextTrialButton').click(nextTrial);
+
+            // Initialize rhythm grid (13 dots) - now hidden
+            const grid = $('#rhythmGrid');
+            for (let i = 0; i < 13; i++) {
+                grid.append('<div class="rhythm-dot" id="dot' + i + '"></div>');
+            }
+        });
+
+        function updateProgressBar() {
+            const progress = ((trial_number - 1) / 10) * 100;
+            $('#progressBar').css('width', progress + '%');
+        }
+
+        function init() {
+            subject_ID = document.getElementById("ID").value;
+            if (!subject_ID) {
+                alert("Please enter your participant ID to continue.");
+                return;
+            }
+            $('#questions').hide();
+            $('#instructions1').show();
+            updateProgressBar();
+        }
+
+        function Continue1() {
+            $('#instructions1').hide();
+            $('#instructions2').show();
+            updateProgressBar();
+        }
+
+        function Continue2() {
+            $('#instructions2').hide();
+            $('#instructions3').show();
+            updateProgressBar();
+        }
+
+        function Continue3() {
+            $('#instructions3').hide();
+            const z = document.getElementById('track11');
+            z.play();
+            z.onended = function() {
+                $('#instructions4').show();
+                document.addEventListener('keyup', showPulseOnSpace);
+            };
+        }
+
+        function showPulseOnSpace(event) {
+            if (event.code === 'Space') {
+                createPulse();
+                animateHands();
+                document.removeEventListener('keyup', showPulseOnSpace);
+                $('#Continue4').show();
+            }
+        }
+
+        function Continue4() {
+            $('#instructions4').hide();
+            $('#instructions5').show();
+            updateProgressBar();
+        }
+
+        function createPulse() {
+            const visualizer = $('.rhythm-visualizer');
+            const pulse = $('<div class="drum-pulse"></div>');
+            visualizer.append(pulse);
+            setTimeout(() => pulse.remove(), 800);
+        }
+
+        function animateHands() {
+            const leftHand = $('.hand.left');
+            const rightHand = $('.hand.right');
+            
+            // Alternate which hand hits to create a more natural drumming motion
+            if (Math.random() > 0.5) {
+                leftHand.addClass('hit');
+                setTimeout(() => leftHand.removeClass('hit'), 200);
+            } else {
+                rightHand.addClass('hit');
+                setTimeout(() => rightHand.removeClass('hit'), 200);
+            }
+        }
+
+        function start() {
+            during_instructions = 0;
+            $('#instructions5').hide();
+            playTrialRhythm();
+        }
+
+        function playTrialRhythm() {
+            $('#trial').show();
+            updateProgressBar();
+            $('#currentResponse').text('Listening...');
+            $('#nextTrialButton').hide();
+            $('.rhythm-dot').removeClass('active correct incorrect');
+
+            const z = document.getElementById('track' + trial_number.toString());
+            z.play();
+
+            z.onended = function () {
+                t0 = performance.now();
+                $('#currentResponse').text('Press SPACE to repeat the rhythm');
+                document.addEventListener('keyup', recordRhythmResponse);
+            };
+        }
+
+        function recordRhythmResponse(event) {
+            if (event.code === 'Space') {
+                const t1 = performance.now();
+                response_array[trial_number - 1].push(t1 - t0);
+                t0 = t1;
+
+                // Visual feedback
+                createPulse();
+                animateHands();
+                
+                // Allow only 13 responses max
+                if (response_array[trial_number - 1].length >= 13) {
+                    document.removeEventListener('keyup', recordRhythmResponse);
+                    $('#nextTrialButton').show();
+                    $('#currentResponse').text('Rhythm recorded! Click "Next Trial".');
+                }
+            }
+        }
+
+        function nextTrial() {
+            if (trial_number >= 10) {
+                save_data();
+            } else {
+                trial_number++;
+                playTrialRhythm();
+            }
+        }
+
+        function save_data() {
+            memory_score = 0;
+
+            for (let i = 0; i < 10; i++) {
+                let time_diff = [];
+                for (let j = 1; j < response_array[i].length; j++) {
+                    time_diff.push(Math.round((response_array[i][j] - response_array[i][j - 1]) / 200));
+                }
+
+                let current_vector = ["1"];
+                for (let j = 0; j < time_diff.length; j++) {
+                    for (let m = 1; m < time_diff[j]; m++) {
+                        current_vector.push("0");
+                    }
+                    current_vector.push("1");
+                }
+
+                let current_correct = correct_answers[i];
+                while (current_vector.length < 13) current_vector.push('0');
+                current_vector = current_vector.slice(0, 13);
+
+                for (let j = 0; j < 13; j++) {
+                    if (current_vector[j] === current_correct[j]) {
+                        memory_score += 1;
+                    }
+                }
+            }
+
+            const percentage_score = (memory_score / 130) * 100;
+
+            $('#trial').hide();
+            $('#thanks').show();
+            $('#finalScore').text(percentage_score.toFixed(1) + '%');
+
+            // Show rhythm comparison
+            let resultsHTML = '<p>You correctly identified <strong>' + memory_score + '</strong> out of 130 rhythm elements.</p>';
+            resultsHTML += '<p>Below is your response pattern (blue = correct, red = wrong):</p>';
+
+            // Generate visual comparison
+            for (let i = 0; i < 13; i++) {
+                const correct = correct_answers[0][i];
+                const response = correct_answers[0][i]; // Placeholder — you can extend this to compare actual responses
+                const dotClass = correct === "1" ? 'correct' : 'incorrect';
+                resultsHTML += `<span class="rhythm-dot ${dotClass}" style="margin: 0 2px;"></span>`;
+            }
+
+            $('#resultsDetails').html(resultsHTML);
+            updateProgressBar();
+        }
+    </script>
+</body>
+</html>

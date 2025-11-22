@@ -86,6 +86,10 @@
             background: linear-gradient(135deg, #38b2ac, #4fd1c5);
         }
         
+        .reproduction-test .card-header {
+            background: linear-gradient(135deg, #6b46c1, #805ad5);
+        }
+        
         .card-header h2 {
             font-size: 1.5rem;
             font-weight: 600;
@@ -258,7 +262,7 @@
             <div class="card full-test">
                 <div class="card-header">
                     <i class="fas fa-clipboard-list"></i>
-                    <h2>Standard Test</h2>
+                    <h2>Discrimination Tests (Standard)</h2>
                 </div>
                 <div class="card-body">
                     <p>Comprehensive assessment of auditory dimensions: formant, pitch, duration, and rise time. Takes approximately 20-30 minutes.</p>
@@ -270,11 +274,23 @@
             <div class="card quick-test">
                 <div class="card-header">
                     <i class="fas fa-bolt"></i>
-                    <h2>Quick Test</h2>
+                    <h2>Discrimination Tests (Quick)</h2>
                 </div>
                 <div class="card-body">
                     <p>Rapid assessment of auditory dimensions with slightly reduced accuracy. Takes approximately 10-15 minutes.</p>
                     <button class="btn" onclick="selectTestType('quick')">Select Quick Test</button>
+                </div>
+            </div>
+            
+            <div class="card reproduction-test">
+                <div class="card-header">
+                    <i class="fas fa-copy"></i>
+                    <h2>Reproduction Tests</h2>
+                </div>
+                <div class="card-body">
+                    <p>Memory-based reproduction tasks for melody and rhythm patterns. Test your auditory memory capabilities.</p>
+                    <button class="btn" onclick="openReproductionTest('melody')">Select Melody Memory Test</button>
+                    <button class="btn" style="margin-top: 12px;" onclick="openReproductionTest('rhythm')">Select Rhythm Memory Test</button>
                 </div>
             </div>
         </div>
@@ -362,6 +378,26 @@
                 return;
             }
             
+            animateProgress(100, function() {
+                setTimeout(function() {
+                    window.location.href = filename;
+                }, 600);
+            });
+        }
+        
+        function openReproductionTest(testType) {
+            // 打开对应的reproduction test文件
+            let filename;
+            if (testType === 'melody') {
+                filename = 'melody_memory1.html';
+            } else if (testType === 'rhythm') {
+                filename = 'rhythm_memory1.html';
+            } else {
+                alert('Invalid test type');
+                return;
+            }
+            
+            // 显示进度条并跳转
             animateProgress(100, function() {
                 setTimeout(function() {
                     window.location.href = filename;
