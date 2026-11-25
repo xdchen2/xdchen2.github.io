@@ -288,9 +288,10 @@
                     <h2>Reproduction Tests</h2>
                 </div>
                 <div class="card-body">
-                    <p>Memory-based reproduction tasks for melody and rhythm patterns. Test your auditory memory capabilities.</p>
+                    <p>Memory-based reproduction tasks for melody, rhythm, and formant patterns. Test your auditory memory capabilities.</p>
                     <button class="btn" onclick="openReproductionTest('melody')">Select Melody Memory Test</button>
                     <button class="btn" style="margin-top: 12px;" onclick="openReproductionTest('rhythm')">Select Rhythm Memory Test</button>
+                    <button class="btn" style="margin-top: 12px;" onclick="openReproductionTest('formant')">Select Formant Memory Test</button>
                 </div>
             </div>
         </div>
@@ -392,6 +393,8 @@
                 filename = 'melody_memory1.html';
             } else if (testType === 'rhythm') {
                 filename = 'rhythm_memory1.html';
+            } else if (testType === 'formant') {
+                filename = 'formant_memory1.html';
             } else {
                 alert('Invalid test type');
                 return;

@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formant Memory Experiment</title>
+    <script src="https://code.jquery.com/jquery-1.6.2.js" type="text/javascript"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        header {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.8em;
+        }
+        
+        p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 160px;
+        }
+        
+        button:hover {
+            background: linear-gradient(to bottom, #2980b9, #2573a7);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .notes-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .note-button {
+            width: 76px;
+            height: 76px;
+            min-width: 76px;
+            padding: 0;
+            font-size: 1.8em;
+            background: linear-gradient(to bottom, #1abc9c, #16a085);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .note-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .note-button:active {
+            transform: scale(0.98);
+        }
+
+        .note-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .input-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        input[type="text"] {
+            padding: 12px 15px;
+            font-size: 1.1em;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 250px;
+            margin-top: 10px;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            height: 12px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #1abc9c, #3498db);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .instructions-box {
+            background-color: #e8f8f5;
+            border-left: 4px solid #16a085;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+        
+        .highlight {
+            background-color: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .results-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .score-display {
+            font-size: 2.5em;
+            text-align: center;
+            color: #2c3e50;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .trial-info {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1.2em;
+            color: #7f8c8d;
+        }
+        
+        .current-response {
+            margin: 20px 0;
+            min-height: 30px;
+            text-align: center;
+            font-size: 1.3em;
+            color: #16a085;
+            font-weight: bold;
+        }
+        
+        .loading-container {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .loading-text {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            color: #555;
+        }
+        
+        .loading-details {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+        
+        .loading-error {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .retry-button {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            button {
+                min-width: 140px;
+                padding: 10px 20px;
+            }
+            
+            .note-button {
+                width: 64px;
+                height: 64px;
+                min-width: 64px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <header id="questions">
+            <h1>Welcome to the Formant Memory Experiment</h1>
+            <div class="input-container">
+                <p>Please enter your participant ID to begin:</p>
+                <input type="text" id="ID" placeholder="Enter participant ID">
+            </div>
+            <div class="button-container">
+                <button type="button" id="submitButton">Start Experiment</button>
+            </div>
+        </header>
+        
+        <header id="loading" class="hidden">
+            <h1>Loading Audio Files</h1>
+            <div class="loading-container">
+                <p class="loading-text">Please wait while we load the audio files...</p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="loadingProgressBar"></div>
+                </div>
+                <p class="loading-details" id="loadingDetails">Preparing audio files...</p>
+                <div class="loading-error hidden" id="loadingError">
+                    <p>Some audio files failed to load. Please check your connection and try again.</p>
+                    <div class="button-container">
+                        <button type="button" id="retryButton" class="retry-button">Retry Loading</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <header id="instructions1" class="hidden">
+            <h1>Instructions</h1>
+            <div class="instructions-box">
+                <p>In this test, you will hear several sequences of vowel-like sounds.</p>
+                <p>The sounds all have the same pitch. They differ only in vowel color.</p>
+                <p>Each sequence will be played three times.</p>
+                <p>Try to remember them, then repeat them by clicking the buttons below.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue1">Continue</button>
+            </div>
+        </header>
+        
+        <header id="instructions2" class="hidden">
+            <h1>Volume Check</h1>
+            <div class="instructions-box">
+                <p>Click the button below to listen to a sample sequence.</p>
+                <p>If the volume is too low or too high, adjust your device's volume and try again.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="playButton">Play Sample Sequence</button>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue2">Continue</button>
+            </div>
+        </header>
+        
+        <header id="instructions3" class="hidden">
+            <h1>How to Respond</h1>
+            <div class="instructions-box">
+                <p>After the sequence finishes playing, repeat it by clicking the five buttons below in order.</p>
+                <p>Each button plays one vowel color. Button 5 is at the top and button 1 is at the bottom.</p>
+                <p>Try clicking them now to become familiar with the sounds.</p>
+            </div>
+            <div class="notes-container">
+                <button class="note-button" id="5Button">5</button>
+                <button class="note-button" id="4Button">4</button>
+                <button class="note-button" id="3Button">3</button>
+                <button class="note-button" id="2Button">2</button>
+                <button class="note-button" id="1Button">1</button>
+            </div>
+            <div class="button-container">
+                <button type="button" id="Continue3">Continue</button>
+            </div>
+        </header>
+        
+        <header id="instructions4" class="hidden">
+            <h1>Final Instructions</h1>
+            <div class="instructions-box">
+                <p>Important: The <span class="highlight">first sound of every sequence is always 3</span>.</p>
+                <p>Each sequence has 7 sounds. When you are ready, click the button below to begin.</p>
+            </div>
+            <div class="button-container">
+                <button type="button" id="restartButton">Start Experiment</button>
+            </div>
+        </header>
+        
+        <header id="trial" class="hidden">
+            <h1>Trial <span id="trialNumber">1</span> / 10</h1>
+            <p class="trial-info">Listen carefully to the sequence, then repeat it by clicking the number buttons below.</p>
+            <div class="current-response" id="currentResponse"></div>
+            <div class="notes-container">
+                <button class="note-button" id="trial5Button">5</button>
+                <button class="note-button" id="trial4Button">4</button>
+                <button class="note-button" id="trial3Button">3</button>
+                <button class="note-button" id="trial2Button">2</button>
+                <button class="note-button" id="trial1Button">1</button>
+            </div>
+            <div class="button-container">
+                <button type="button" id="nextTrialButton">Next Trial</button>
+            </div>
+        </header>
+        
+        <header id="thanks" class="hidden">
+            <h1>Thank You for Participating!</h1>
+            <p>The experiment is complete. Thank you for your time and effort.</p>
+            <div class="results-container">
+                <h2>Your Results</h2>
+                <div class="score-display" id="finalScore">Calculating...</div>
+                <div id="resultsDetails"></div>
+                <div class="button-container">
+                    <button type="button" id="downloadButton">Download Data</button>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <script type="text/javascript">
+        // Stimuli: F2 centered at 1500 Hz, 200 Hz steps.
+        // Button 1–5 = 1100, 1300, 1500, 1700, 1900 Hz. F0, F1, and F3 are fixed.
+        // Files 1–10 are the scored trials. File 11 is the volume-check sample.
+        // Each sequence file already contains three repetitions.
+        var response_array = [[],[],[],[],[],[],[],[],[],[]];
+        var trial_number = 1;
+        var during_instructions = 1;
+        var memory_score = 0;
+        var subject_ID = "";
+        var dataFileUrl = "";
+        
+        var audioElements = {};
+        var totalAudioFiles = 16; // 11 sequences + 5 response sounds
+        var loadedAudioFiles = 0;
+        var audioLoadErrors = 0;
+        var audioSettled = {};
+        
+        var correct_answers = [
+            ["3", "3", "2", "1", "2", "1", "2"],
+            ["3", "2", "3", "2", "3", "2", "1"],
+            ["3", "2", "2", "3", "3", "3", "4"],
+            ["3", "4", "5", "4", "5", "4", "5"],
+            ["3", "2", "1", "2", "2", "2", "3"],
+            ["3", "4", "3", "4", "4", "5", "4"],
+            ["3", "2", "3", "3", "3", "4", "3"],
+            ["3", "2", "1", "2", "3", "3", "4"],
+            ["3", "3", "4", "4", "5", "5", "4"],
+            ["3", "2", "1", "2", "1", "1", "1"]
+        ];
+        
+        function createAudioElements() {
+            var i;
+            for (i = 1; i < 12; i++) {
+                addAudio('track' + i.toString(), './formant_memory/' + i.toString() + '.flac');
+            }
+            for (i = 1; i < 6; i++) {
+                addAudio('note' + i.toString(), './formant_memory/note' + i.toString() + '.flac');
+            }
+        }
+
+        function addAudio(audioId, src) {
+            var audioElement = new Audio();
+            audioElement.id = audioId;
+            audioElement.preload = 'auto';
+
+            var sourceElement = document.createElement('source');
+            sourceElement.src = src;
+            sourceElement.type = 'audio/flac';
+
+            audioElement.appendChild(sourceElement);
+            document.body.appendChild(audioElement);
+            audioElements[audioId] = audioElement;
+        }
+        
+        function preloadAudioFiles() {
+            loadedAudioFiles = 0;
+            audioLoadErrors = 0;
+            audioSettled = {};
+            updateLoadingProgress();
+
+            var ids = [];
+            for (var id in audioElements) {
+                if (audioElements.hasOwnProperty(id)) {
+                    ids.push(id);
+                    bindAudioLoad(id, audioElements[id]);
+                    audioElements[id].load();
+                }
+            }
+
+            // Cached local files can reach readyState 4 without firing
+            // canplaythrough again. Poll until every file is playable.
+            var checks = 0;
+            var timer = setInterval(function () {
+                checks++;
+                for (var i = 0; i < ids.length; i++) {
+                    var audio = audioElements[ids[i]];
+                    if (audio.readyState >= 3) {
+                        markAudioSettled(ids[i], true);
+                    } else if (audio.error) {
+                        markAudioSettled(ids[i], false);
+                    }
+                }
+                if (loadedAudioFiles + audioLoadErrors >= totalAudioFiles || checks > 80) {
+                    clearInterval(timer);
+                    if (loadedAudioFiles < totalAudioFiles) {
+                        $('#loadingError').removeClass('hidden');
+                    }
+                }
+            }, 100);
+        }
+
+        function bindAudioLoad(id, audio) {
+            audio.addEventListener('canplaythrough', function () {
+                markAudioSettled(id, true);
+            });
+            audio.addEventListener('error', function () {
+                markAudioSettled(id, false);
+            });
+        }
+
+        function markAudioSettled(id, ok) {
+            if (audioSettled[id]) {
+                return;
+            }
+            audioSettled[id] = true;
+            if (ok) {
+                loadedAudioFiles++;
+            } else {
+                audioLoadErrors++;
+            }
+            updateLoadingProgress();
+
+            if (loadedAudioFiles + audioLoadErrors === totalAudioFiles) {
+                if (audioLoadErrors === 0) {
+                    $('#loading').hide();
+                    $('#instructions1').show();
+                } else {
+                    $('#loadingError').removeClass('hidden');
+                }
+            }
+        }
+        
+        function updateLoadingProgress() {
+            var progress = ((loadedAudioFiles + audioLoadErrors) / totalAudioFiles) * 100;
+            $('#loadingProgressBar').css('width', progress + '%');
+            
+            var detailsText = 'Loaded ' + loadedAudioFiles + ' of ' + totalAudioFiles + ' audio files';
+            if (audioLoadErrors > 0) {
+                detailsText += ' (' + audioLoadErrors + ' failed)';
+            }
+            $('#loadingDetails').text(detailsText);
+        }
+
+        function playNote(noteNumber) {
+            var audio = audioElements['note' + noteNumber];
+            if (!audio) {
+                return;
+            }
+            try {
+                audio.currentTime = 0;
+            } catch (e) {}
+            audio.play();
+        }
+
+        $(document).ready(function () {
+            updateProgressBar();
+            createAudioElements();
+            
+            $('#submitButton').click(init);
+            $('#Continue1').click(Continue1);
+            $('#Continue2').click(Continue2);
+            $('#Continue3').click(Continue3);
+            $('#restartButton').click(start);
+            $('#playButton').click(playDemo);
+            $('#nextTrialButton').click(nextTrial);
+            $('#retryButton').click(retryLoading);
+            $('#downloadButton').click(downloadData);
+            
+            $('#1Button, #trial1Button').click(function () { respond('1'); });
+            $('#2Button, #trial2Button').click(function () { respond('2'); });
+            $('#3Button, #trial3Button').click(function () { respond('3'); });
+            $('#4Button, #trial4Button').click(function () { respond('4'); });
+            $('#5Button, #trial5Button').click(function () { respond('5'); });
+        });
+        
+        function updateProgressBar() {
+            var progress = 0;
+            if (trial_number > 1) {
+                progress = ((trial_number - 1) / 10) * 100;
+            }
+            if (trial_number > 10) {
+                progress = 100;
+            }
+            $('#progressBar').css('width', progress + '%');
+            $('#trialNumber').text(trial_number);
+        }
+        
+        function updateCurrentResponse() {
+            var currentTrial = trial_number - 1;
+            if (currentTrial >= 0 && currentTrial < response_array.length) {
+                var response = response_array[currentTrial].join(' - ');
+                $('#currentResponse').text('Your response: ' + (response || 'None yet') + '  (' + response_array[currentTrial].length + ' / 7)');
+            }
+        }
+        
+        function playDemo() {
+            var sample = audioElements['track11'];
+            try {
+                sample.currentTime = 0;
+            } catch (e) {}
+            sample.play();
+        }
+        
+        function init() {
+            subject_ID = document.getElementById("ID").value.replace(/^\s+|\s+$/g, '');
+            if (!subject_ID) {
+                alert("Please enter your participant ID to continue.");
+                return;
+            }
+            
+            $('#questions').hide();
+            $('#loading').show();
+            preloadAudioFiles();
+        }
+        
+        function retryLoading() {
+            $('#loadingError').addClass('hidden');
+            preloadAudioFiles();
+        }
+        
+        function Continue1() {
+            $('#instructions1').hide();
+            $('#instructions2').show();
+        }
+        
+        function Continue2() {
+            var sample = audioElements['track11'];
+            if (sample && !sample.paused) {
+                sample.pause();
+            }
+            $('#instructions2').hide();
+            $('#instructions3').show();
+        }
+        
+        function Continue3() {
+            $('#instructions3').hide();
+            $('#instructions4').show();
+        }
+        
+        function start() {
+            during_instructions = 0;
+            $('#instructions4').hide();
+            playTrialSequence();
+        }
+        
+        function playTrialSequence() {
+            $('#trial').show();
+            updateProgressBar();
+            $('#currentResponse').text('Playing sequence...');
+            
+            $('#trial1Button, #trial2Button, #trial3Button, #trial4Button, #trial5Button').prop('disabled', true);
+            $('#nextTrialButton').hide();
+            
+            var sequence = audioElements['track' + trial_number.toString()];
+            try {
+                sequence.currentTime = 0;
+            } catch (e) {}
+            sequence.play();
+            
+            sequence.onended = function () {
+                $('#trial1Button, #trial2Button, #trial3Button, #trial4Button, #trial5Button').prop('disabled', false);
+                $('#nextTrialButton').show();
+                $('#currentResponse').text('Please repeat the sequence:');
+                updateCurrentResponse();
+            };
+        }
+        
+        function nextTrial() {
+            $('#trial1Button, #trial2Button, #trial3Button, #trial4Button, #trial5Button').prop('disabled', true);
+            $('#nextTrialButton').hide();
+            
+            if (trial_number >= 10) {
+                save_data();
+            } else {
+                trial_number++;
+                playTrialSequence();
+            }
+        }
+
+        function scoreResponses() {
+            memory_score = 0;
+            var rows = [];
+
+            for (var i = 0; i < 10; i++) {
+                var current_vector = response_array[i].slice(0);
+                var current_correct = correct_answers[i];
+                var trial_correct = 0;
+
+                while (current_vector.length < 7) {
+                    current_vector.push('0');
+                }
+                current_vector = current_vector.slice(0, 7);
+
+                for (var j = 0; j < 7; j++) {
+                    if (current_vector[j] === current_correct[j]) {
+                        memory_score += 1;
+                        trial_correct += 1;
+                    }
+                }
+
+                rows.push({
+                    trial: i + 1,
+                    response: current_vector.join('-'),
+                    correct: current_correct.join('-'),
+                    nCorrect: trial_correct
+                });
+            }
+
+            return rows;
+        }
+
+        function buildDataText(rows) {
+            var percentage_score = (memory_score / 70) * 100;
+            var lines = [
+                'task: formant_memory_200Hz',
+                'participant_id: ' + subject_ID,
+                'f2_step_hz: 200',
+                'f2_hz: 1100,1300,1500,1700,1900',
+                'score_correct: ' + memory_score,
+                'score_total: 70',
+                'score_percent: ' + percentage_score.toFixed(1),
+                'trial,response,correct,n_correct'
+            ];
+
+            for (var i = 0; i < rows.length; i++) {
+                lines.push(rows[i].trial + ',' + rows[i].response + ',' + rows[i].correct + ',' + rows[i].nCorrect);
+            }
+            return lines.join('\n') + '\n';
+        }
+        
+        function save_data() {
+            var rows = scoreResponses();
+            var percentage_score = (memory_score / 70) * 100;
+            var fileContent = buildDataText(rows);
+            var blob = new Blob([fileContent], { type: 'text/plain' });
+            dataFileUrl = window.URL.createObjectURL(blob);
+
+            $('#trial').hide();
+            $('#thanks').show();
+            $('#progressBar').css('width', '100%');
+            $('#finalScore').text(percentage_score.toFixed(1) + '%');
+            $('#resultsDetails').html('<p>You correctly reproduced ' + memory_score + ' out of 70 sounds.</p><p>A data file for participant ' + subject_ID + ' is ready to download.</p>');
+            downloadData();
+        }
+
+        function downloadData() {
+            if (!dataFileUrl) {
+                return;
+            }
+            var a = document.createElement('a');
+            a.href = dataFileUrl;
+            a.download = subject_ID + '_formant_memory_200Hz.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        function respond(noteNumber) {
+            if (during_instructions < 1) {
+                response_array[trial_number - 1].push(noteNumber);
+                updateCurrentResponse();
+            }
+            playNote(noteNumber);
+        }
+    </script>
+</body>
+</html>
